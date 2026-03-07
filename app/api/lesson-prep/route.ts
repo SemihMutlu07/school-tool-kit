@@ -1,9 +1,5 @@
 import Anthropic from "@anthropic-ai/sdk";
 
-const client = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY,
-});
-
 const SYSTEM_PROMPT = `You are an expert K-12 curriculum designer helping teachers create practical, engaging lesson plans.
 
 Given a topic, grade level, class duration, and optional notes, generate a comprehensive lesson plan.
@@ -40,6 +36,7 @@ Rules:
 - Be specific and practical — avoid vague generalities`;
 
 export async function POST(req: Request) {
+  const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
   try {
     const { topic, gradeLevel, duration, notes } = await req.json();
 

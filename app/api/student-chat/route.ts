@@ -1,9 +1,5 @@
 import Anthropic from "@anthropic-ai/sdk";
 
-const client = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY,
-});
-
 const SYSTEM_PROMPT = `You are a friendly, encouraging AI tutor for K-12 students. You adapt your explanations, vocabulary, and examples to the student's grade level.
 
 At the very start of EVERY response, output exactly one of these two tags on its own — before any other text:
@@ -48,6 +44,7 @@ Remember: The [MODE: explanation] or [MODE: hint] tag MUST be the first thing in
 type Message = { role: "user" | "assistant"; content: string };
 
 export async function POST(req: Request) {
+  const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
   try {
     const { messages, newMessage, gradeLevel, topic } = await req.json();
 

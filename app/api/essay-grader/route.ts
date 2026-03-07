@@ -1,9 +1,5 @@
 import Anthropic from "@anthropic-ai/sdk";
 
-const client = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY,
-});
-
 const SYSTEM_PROMPT = `You are an expert K-12 writing teacher who grades student essays with precision, fairness, and constructive feedback.
 
 Given an essay and grade level, you will:
@@ -47,6 +43,7 @@ Rules:
 - shareableSummary should be warm, honest, and student-facing`;
 
 export async function POST(req: Request) {
+  const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
   try {
     const { essayText, gradeLevel } = await req.json();
 

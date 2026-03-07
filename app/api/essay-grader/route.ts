@@ -43,6 +43,9 @@ Rules:
 - shareableSummary should be warm, honest, and student-facing`;
 
 export async function POST(req: Request) {
+  if (!process.env.ANTHROPIC_API_KEY) {
+    return Response.json({ error: "ANTHROPIC_API_KEY is not set on the server." }, { status: 500 });
+  }
   const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
   try {
     const { essayText, gradeLevel } = await req.json();

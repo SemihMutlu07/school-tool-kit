@@ -44,6 +44,9 @@ Remember: The [MODE: explanation] or [MODE: hint] tag MUST be the first thing in
 type Message = { role: "user" | "assistant"; content: string };
 
 export async function POST(req: Request) {
+  if (!process.env.ANTHROPIC_API_KEY) {
+    return Response.json({ error: "ANTHROPIC_API_KEY is not set on the server." }, { status: 500 });
+  }
   const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
   try {
     const { messages, newMessage, gradeLevel, topic } = await req.json();

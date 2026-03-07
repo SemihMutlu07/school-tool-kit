@@ -36,6 +36,9 @@ Rules:
 - Be specific and practical — avoid vague generalities`;
 
 export async function POST(req: Request) {
+  if (!process.env.ANTHROPIC_API_KEY) {
+    return Response.json({ error: "ANTHROPIC_API_KEY is not set on the server." }, { status: 500 });
+  }
   const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
   try {
     const { topic, gradeLevel, duration, notes } = await req.json();

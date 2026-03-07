@@ -86,10 +86,8 @@ export async function POST(req: Request) {
     const result = JSON.parse(cleaned);
     return Response.json({ result });
   } catch (err) {
-    console.error("lesson-prep API error:", err);
-    return Response.json(
-      { error: "Something went wrong. Please try again." },
-      { status: 500 }
-    );
+    const message = err instanceof Error ? err.message : String(err);
+    console.error("lesson-prep API error:", message);
+    return Response.json({ error: message }, { status: 500 });
   }
 }

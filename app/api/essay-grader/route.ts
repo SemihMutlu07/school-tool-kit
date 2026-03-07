@@ -93,10 +93,8 @@ export async function POST(req: Request) {
 
     return Response.json({ result });
   } catch (err) {
-    console.error("essay-grader API error:", err);
-    return Response.json(
-      { error: "Something went wrong. Please try again." },
-      { status: 500 }
-    );
+    const message = err instanceof Error ? err.message : String(err);
+    console.error("essay-grader API error:", message);
+    return Response.json({ error: message }, { status: 500 });
   }
 }

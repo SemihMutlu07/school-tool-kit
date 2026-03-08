@@ -1,4 +1,4 @@
-import Anthropic from "@anthropic-ai/sdk";
+import OpenAI from "openai";
 
 const SYSTEM_PROMPT = `You are an expert K-12 curriculum designer helping teachers create practical, engaging lesson plans.
 
@@ -36,10 +36,10 @@ Rules:
 - Be specific and practical — avoid vague generalities`;
 
 export async function POST(req: Request) {
-  if (!process.env.ANTHROPIC_API_KEY) {
-    return Response.json({ error: "ANTHROPIC_API_KEY is not set on the server." }, { status: 500 });
+  if (!process.env.OPENAI_API_KEY) {
+    return Response.json({ error: "OPENAI_API_KEY is not set on the server." }, { status: 500 });
   }
-  const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+  const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
   try {
     const { topic, gradeLevel, duration, notes } = await req.json();
 
@@ -67,15 +67,16 @@ export async function POST(req: Request) {
       .filter(Boolean)
       .join("\n");
 
-    const message = await client.messages.create({
-      model: "claude-sonnet-4-6",
+    const message = await client.chat.completions.create({
+      model: "gpt-4o-mini",
       max_tokens: 2048,
-      system: SYSTEM_PROMPT,
-      messages: [{ role: "user", content: userPrompt }],
+      messages: [
+        { role: "system", content: SYSTEM_PROMPT },
+        { role: "user", content: userPrompt },
+      ],
     });
 
-    const raw =
-      message.content[0].type === "text" ? message.content[0].text : "";
+    const raw = message.choices[0]?.message?.content ?? "";
 
     // Strip any accidental markdown code fences
     const cleaned = raw

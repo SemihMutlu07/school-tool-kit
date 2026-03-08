@@ -164,7 +164,10 @@ function SetupScreen({
   onStart: (grade: string, topic: string) => void;
 }) {
   const [selectedGrade, setSelectedGrade] = useState("");
+  const [customGrade, setCustomGrade] = useState("");
   const [topic, setTopic] = useState("");
+
+  const activeGrade = customGrade.trim() || selectedGrade;
 
   return (
     <div
@@ -243,30 +246,25 @@ function SetupScreen({
                 <button
                   key={g.value}
                   type="button"
-                  onClick={() => setSelectedGrade(g.value)}
+                  onClick={() => { setSelectedGrade(g.value); setCustomGrade(""); }}
                   className="w-full flex items-center gap-4 px-5 py-4 rounded-2xl border-2 transition-all duration-200 text-left"
                   style={{
-                    borderColor:
-                      selectedGrade === g.value ? g.color : "#e7e5e4",
-                    backgroundColor:
-                      selectedGrade === g.value ? g.bg : "#fff",
-                    boxShadow:
-                      selectedGrade === g.value
-                        ? `0 0 0 3px ${g.color}22`
-                        : "none",
+                    borderColor: selectedGrade === g.value && !customGrade ? g.color : "#e7e5e4",
+                    backgroundColor: selectedGrade === g.value && !customGrade ? g.bg : "#fff",
+                    boxShadow: selectedGrade === g.value && !customGrade ? `0 0 0 3px ${g.color}22` : "none",
                   }}
                 >
                   <span className="text-2xl">{g.emoji}</span>
                   <div>
                     <div
                       className="font-bold text-stone-900"
-                      style={{ fontFamily: "var(--font-display)", color: selectedGrade === g.value ? g.color : undefined }}
+                      style={{ fontFamily: "var(--font-display)", color: selectedGrade === g.value && !customGrade ? g.color : undefined }}
                     >
                       {g.label}
                     </div>
                     <div className="text-xs text-stone-400">{g.sub}</div>
                   </div>
-                  {selectedGrade === g.value && (
+                  {selectedGrade === g.value && !customGrade && (
                     <div className="ml-auto">
                       <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" style={{ color: g.color }}>
                         <path fillRule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm3.857-9.809a.75.75 0 0 0-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 1 0-1.06 1.061l2.5 2.5a.75.75 0 0 0 1.137-.089l4-5.5Z" clipRule="evenodd" />
@@ -276,6 +274,21 @@ function SetupScreen({
                 </button>
               ))}
             </div>
+
+            {/* Custom grade input */}
+            <div className="mt-3 flex items-center gap-3">
+              <div className="flex-1 h-px bg-stone-200" />
+              <span className="text-xs text-stone-400 shrink-0">or type yours</span>
+              <div className="flex-1 h-px bg-stone-200" />
+            </div>
+            <input
+              type="text"
+              className="mt-3 w-full rounded-xl border px-4 py-3 text-sm text-stone-800 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-blue-300 transition-all"
+              style={{ borderColor: customGrade ? "#3b82f6" : "#e7e5e4", backgroundColor: customGrade ? "#eff6ff" : "#fff" }}
+              placeholder='e.g. "Grade 7", "11th grade", "University"'
+              value={customGrade}
+              onChange={(e) => { setCustomGrade(e.target.value); if (e.target.value) setSelectedGrade(""); }}
+            />
           </div>
 
           {/* Optional topic */}
@@ -296,12 +309,12 @@ function SetupScreen({
           {/* Start */}
           <button
             type="button"
-            disabled={!selectedGrade}
-            onClick={() => onStart(selectedGrade, topic)}
+            disabled={!activeGrade}
+            onClick={() => onStart(activeGrade, topic)}
             className="w-full py-4 px-6 rounded-2xl text-base font-bold text-white transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             style={{
-              backgroundColor: selectedGrade ? "#3b82f6" : "#93c5fd",
-              boxShadow: selectedGrade ? "0 4px 18px 0 rgba(59,130,246,0.3)" : "none",
+              backgroundColor: activeGrade ? "#3b82f6" : "#93c5fd",
+              boxShadow: activeGrade ? "0 4px 18px 0 rgba(59,130,246,0.3)" : "none",
             }}
           >
             Start Chatting

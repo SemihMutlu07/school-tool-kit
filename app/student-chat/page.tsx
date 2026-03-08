@@ -358,7 +358,15 @@ function ChatScreen({
   const bottomRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
-  const gradeConfig = gradeLevels.find((g) => g.value === gradeLevel)!;
+  const gradeConfig = gradeLevels.find((g) => g.value === gradeLevel) ?? {
+    value: gradeLevel,
+    label: gradeLevel,
+    sub: "",
+    emoji: "💬",
+    color: "#3b82f6",
+    bg: "#eff6ff",
+    border: "#bfdbfe",
+  };
 
   // Auto-scroll on new messages
   useEffect(() => {

@@ -1,4 +1,4 @@
-import OpenAI from "openai";
+import Anthropic from "@anthropic-ai/sdk";
 
 const SYSTEM_PROMPT = `You are an expert K-12 writing teacher who grades student essays with precision, fairness, and constructive feedback.
 
@@ -43,10 +43,10 @@ Rules:
 - shareableSummary should be warm, honest, and student-facing`;
 
 export async function POST(req: Request) {
-  if (!process.env.OPENAI_API_KEY) {
-    return Response.json({ error: "OPENAI_API_KEY is not set on the server." }, { status: 500 });
+  if (!process.env.ANTHROPIC_API_KEY) {
+    return Response.json({ error: "ANTHROPIC_API_KEY is not set on the server." }, { status: 500 });
   }
-  const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+  const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
   try {
     const { essayText, gradeLevel } = await req.json();
 
@@ -66,16 +66,14 @@ export async function POST(req: Request) {
 
     const userPrompt = `Grade level: ${gradeLevel}\n\nEssay to grade:\n\n${essayText.trim()}`;
 
-    const message = await client.chat.completions.create({
-      model: "gpt-4o-mini",
+    const message = await client.messages.create({
+      model: "claude-sonnet-4-5-20251001",
       max_tokens: 2048,
-      messages: [
-        { role: "system", content: SYSTEM_PROMPT },
-        { role: "user", content: userPrompt },
-      ],
+      system: SYSTEM_PROMPT,
+      messages: [{ role: "user", content: userPrompt }],
     });
 
-    const raw = message.choices[0]?.message?.content ?? "";
+    const raw = message.content[0].type === "text" ? message.content[0].text : "";
 
     const cleaned = raw
       .replace(/^```(?:json)?\n?/i, "")

@@ -1,4 +1,4 @@
-import OpenAI from "openai";
+import Anthropic from "@anthropic-ai/sdk";
 
 const SYSTEM_PROMPT = `You are a friendly, encouraging AI tutor for K-12 students. You adapt your explanations, vocabulary, and examples to the student's grade level.
 
@@ -44,10 +44,10 @@ Remember: The [MODE: explanation] or [MODE: hint] tag MUST be the first thing in
 type Message = { role: "user" | "assistant"; content: string };
 
 export async function POST(req: Request) {
-  if (!process.env.OPENAI_API_KEY) {
-    return Response.json({ error: "OPENAI_API_KEY is not set on the server." }, { status: 500 });
+  if (!process.env.ANTHROPIC_API_KEY) {
+    return Response.json({ error: "ANTHROPIC_API_KEY is not set on the server." }, { status: 500 });
   }
-  const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+  const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
   try {
     const { messages, newMessage, gradeLevel, topic } = await req.json();
 
@@ -70,16 +70,14 @@ export async function POST(req: Request) {
       { role: "user", content: newMessage.trim() },
     ];
 
-    const response = await client.chat.completions.create({
-      model: "gpt-4o-mini",
+    const response = await client.messages.create({
+      model: "claude-sonnet-4-5-20251001",
       max_tokens: 1024,
-      messages: [
-        { role: "system", content: systemWithContext },
-        ...allMessages,
-      ],
+      system: systemWithContext,
+      messages: allMessages,
     });
 
-    const text = response.choices[0]?.message?.content ?? "";
+    const text = response.content[0].type === "text" ? response.content[0].text : "";
 
     return Response.json({ reply: text });
   } catch (err) {

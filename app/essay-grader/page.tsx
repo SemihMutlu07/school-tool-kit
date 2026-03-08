@@ -15,59 +15,53 @@ type GradeResult = {
 
 // ── PDF / file text extraction (no external packages) ─────────────────────────
 
-async function extractFileText(file: File): Promise<string> {
-  // Plain text files
+function looksLikeRealText(text: string): boolean {
+  const words = text.split(/\s+/).filter((w) => w.length > 0);
+  if (words.length < 30) return false;
+  // Count words that are purely alphabetic and plausible length (2–20 chars)
+  const natural = words.filter((w) => /^[a-zA-Z'-]{2,20}$/.test(w));
+  return natural.length / words.length > 0.55;
+}
+
+async function extractFileText(file: File): Promise<{ text: string; error?: string }> {
+  // Plain text files — always works
   if (file.type === "text/plain" || file.name.endsWith(".txt")) {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
-      reader.onload = (e) => resolve((e.target?.result as string) ?? "");
+      reader.onload = (e) => resolve({ text: (e.target?.result as string) ?? "" });
       reader.onerror = reject;
       reader.readAsText(file);
     });
   }
 
-  // PDF — best-effort extraction without external libraries
+  // PDF — BT/ET extraction only (never fall back to raw ASCII dump)
   return new Promise((resolve) => {
     const reader = new FileReader();
     reader.onload = (e) => {
       const buf = e.target?.result as ArrayBuffer;
       const raw = new TextDecoder("latin1").decode(buf);
-
       const chunks: string[] = [];
 
-      // Strategy 1: extract text from BT...ET blocks (uncompressed PDF streams)
       const btEt = /BT([\s\S]*?)ET/g;
       let m: RegExpExecArray | null;
       while ((m = btEt.exec(raw)) !== null) {
-        const inner = m[1];
         const paren = /\(([^)\\]*(?:\\.[^)\\]*)*)\)/g;
         let p: RegExpExecArray | null;
-        while ((p = paren.exec(inner)) !== null) {
+        while ((p = paren.exec(m[1])) !== null) {
           const t = p[1]
-            .replace(/\\n/g, " ")
-            .replace(/\\r/g, " ")
-            .replace(/\\t/g, " ")
-            .replace(/\\\(/g, "(")
-            .replace(/\\\)/g, ")")
-            .replace(/\\\\/g, "\\");
+            .replace(/\\n/g, " ").replace(/\\r/g, " ").replace(/\\t/g, " ")
+            .replace(/\\\(/g, "(").replace(/\\\)/g, ")").replace(/\\\\/g, "\\");
           if (/[a-zA-Z]{2,}/.test(t)) chunks.push(t);
         }
       }
 
-      if (chunks.length > 20) {
-        resolve(chunks.join(" ").replace(/\s+/g, " ").trim());
-        return;
+      const joined = chunks.join(" ").replace(/\s+/g, " ").trim();
+
+      if (looksLikeRealText(joined)) {
+        resolve({ text: joined });
+      } else {
+        resolve({ text: "", error: "Could not extract text from this PDF. Please paste the essay text instead." });
       }
-
-      // Strategy 2: grab printable ASCII runs (works for some simple PDFs)
-      const printable = raw
-        .replace(/[^\x20-\x7E\n]/g, " ")
-        .replace(/\s+/g, " ")
-        .replace(/ {3,}/g, "\n")
-        .trim();
-
-      // Return whatever we got — the UI will warn if it looks thin
-      resolve(printable.length > 100 ? printable : "");
     };
     reader.readAsArrayBuffer(file);
   });
@@ -169,11 +163,9 @@ function PencilLoadingAnimation() {
 // ── Score helpers ──────────────────────────────────────────────────────────────
 
 function scoreColor(score: number) {
-  if (score >= 5) return { bar: "#10b981", text: "#065f46", bg: "#ecfdf5" };
-  if (score >= 4) return { bar: "#34d399", text: "#065f46", bg: "#f0fdf4" };
-  if (score >= 3) return { bar: "#f59e0b", text: "#78350f", bg: "#fffbeb" };
-  if (score >= 2) return { bar: "#f97316", text: "#7c2d12", bg: "#fff7ed" };
-  return { bar: "#ef4444", text: "#7f1d1d", bg: "#fef2f2" };
+  if (score >= 4) return { bar: "#10b981", text: "#065f46", bg: "#ecfdf5" }; // green
+  if (score >= 3) return { bar: "#f97316", text: "#7c2d12", bg: "#fff7ed" }; // orange
+  return         { bar: "#ef4444", text: "#7f1d1d", bg: "#fef2f2" };         // red
 }
 
 function totalScoreLabel(total: number) {
@@ -238,35 +230,43 @@ export default function EssayGraderPage() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<GradeResult | null>(null);
   const [error, setError] = useState("");
-  const [fileName, setFileName] = useState("");
-  const [fileWarning, setFileWarning] = useState("");
+  // PDF upload state — separate from textarea
+  const [uploadedFile, setUploadedFile] = useState<{ name: string; text: string; wordCount: number } | null>(null);
+  const [pdfError, setPdfError] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // What we actually send to the API
+  const textToGrade = uploadedFile?.text ?? essayText;
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    setFileWarning("");
-    setFileName(file.name);
+    setPdfError("");
+    setUploadedFile(null);
+    if (fileInputRef.current) fileInputRef.current.value = "";
 
-    const extracted = await extractFileText(file);
+    const { text, error: extractError } = await extractFileText(file);
 
-    if (!extracted || extracted.trim().length < 50) {
-      setFileWarning(
-        "PDF text extraction was limited — for best results, paste the essay text directly."
-      );
-      if (extracted) setEssayText(extracted.trim());
-    } else {
-      setEssayText(extracted.trim());
+    if (extractError || !text) {
+      setPdfError(extractError ?? "Could not extract text from this PDF. Please paste the essay text instead.");
+      return;
     }
 
-    // Reset the input so the same file can be re-uploaded
+    const wordCount = text.trim().split(/\s+/).filter(Boolean).length;
+    setUploadedFile({ name: file.name, text, wordCount });
+    setEssayText(""); // clear manual textarea when file loaded
+  };
+
+  const removeFile = () => {
+    setUploadedFile(null);
+    setPdfError("");
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!essayText.trim() || !gradeLevel) return;
+    if (!textToGrade.trim() || !gradeLevel) return;
 
     setLoading(true);
     setResult(null);
@@ -276,7 +276,7 @@ export default function EssayGraderPage() {
       const res = await fetch("/api/essay-grader", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ essayText, gradeLevel }),
+        body: JSON.stringify({ essayText: textToGrade, gradeLevel }),
       });
       const data = await res.json();
       if (data.error) throw new Error(data.error);
@@ -350,39 +350,54 @@ export default function EssayGraderPage() {
               </div>
 
               <form onSubmit={handleSubmit} className="px-6 py-6 space-y-5">
-                {/* Essay textarea */}
+                {/* Essay input — textarea OR uploaded file card */}
                 <div>
                   <label className={labelClass}>
                     Essay Text <span className="text-amber-500 font-bold">*</span>
                   </label>
-                  <textarea
-                    className={`${inputClass} resize-none focus:ring-amber-300`}
-                    rows={10}
-                    placeholder="Paste the student's essay here…"
-                    value={essayText}
-                    onChange={(e) => {
-                      setEssayText(e.target.value);
-                      setFileName("");
-                      setFileWarning("");
-                    }}
-                    required
-                  />
-                  <div className="mt-2 flex items-center justify-between">
-                    <span className="text-xs text-stone-400">
-                      {essayText.trim().split(/\s+/).filter(Boolean).length} words
-                    </span>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setEssayText("");
-                        setFileName("");
-                        setFileWarning("");
-                      }}
-                      className="text-xs text-stone-400 hover:text-stone-600 transition-colors"
-                    >
-                      Clear
-                    </button>
-                  </div>
+
+                  {uploadedFile ? (
+                    /* ── Uploaded file success card ── */
+                    <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3.5 flex items-start gap-3">
+                      <div className="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center shrink-0 mt-0.5">
+                        <svg className="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
+                        </svg>
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-semibold text-emerald-800 truncate">{uploadedFile.name}</p>
+                        <p className="text-xs text-emerald-600 mt-0.5">
+                          Text extracted successfully · {uploadedFile.wordCount} words
+                        </p>
+                      </div>
+                      <button type="button" onClick={removeFile}
+                        className="shrink-0 text-xs text-emerald-600 hover:text-red-500 font-medium transition-colors">
+                        Remove
+                      </button>
+                    </div>
+                  ) : (
+                    /* ── Manual textarea ── */
+                    <>
+                      <textarea
+                        className={`${inputClass} resize-none focus:ring-amber-300`}
+                        rows={10}
+                        placeholder="Paste the student's essay here…"
+                        value={essayText}
+                        onChange={(e) => setEssayText(e.target.value)}
+                      />
+                      <div className="mt-2 flex items-center justify-between">
+                        <span className="text-xs text-stone-400">
+                          {essayText.trim().split(/\s+/).filter(Boolean).length} words
+                        </span>
+                        {essayText && (
+                          <button type="button" onClick={() => setEssayText("")}
+                            className="text-xs text-stone-400 hover:text-stone-600 transition-colors">
+                            Clear
+                          </button>
+                        )}
+                      </div>
+                    </>
+                  )}
                 </div>
 
                 {/* PDF upload */}
@@ -394,35 +409,21 @@ export default function EssayGraderPage() {
                   </div>
 
                   <div className="mt-3">
-                    <input
-                      ref={fileInputRef}
-                      type="file"
-                      accept=".pdf,.txt"
-                      className="hidden"
-                      onChange={handleFileUpload}
-                      id="file-upload"
-                    />
-                    <label
-                      htmlFor="file-upload"
-                      className="flex items-center justify-center gap-2 w-full py-2.5 px-4 rounded-xl border border-dashed border-stone-300 text-sm text-stone-500 cursor-pointer hover:border-amber-300 hover:text-amber-600 hover:bg-amber-50 transition-all"
-                    >
+                    <input ref={fileInputRef} type="file" accept=".pdf,.txt"
+                      className="hidden" onChange={handleFileUpload} id="file-upload" />
+                    <label htmlFor="file-upload"
+                      className="flex items-center justify-center gap-2 w-full py-2.5 px-4 rounded-xl border border-dashed border-stone-300 text-sm text-stone-500 cursor-pointer hover:border-amber-300 hover:text-amber-600 hover:bg-amber-50 transition-all">
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5" />
                       </svg>
-                      {fileName ? (
-                        <span className="text-amber-600 font-medium truncate max-w-[200px]">
-                          {fileName}
-                        </span>
-                      ) : (
-                        "Upload PDF or .txt file"
-                      )}
+                      Upload PDF or .txt file
                     </label>
                   </div>
 
-                  {fileWarning && (
-                    <div className="mt-2 flex items-start gap-2 text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">
+                  {pdfError && (
+                    <div className="mt-2 flex items-start gap-2 text-xs text-red-700 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
                       <span className="shrink-0 mt-0.5">⚠️</span>
-                      {fileWarning}
+                      {pdfError}
                     </div>
                   )}
                 </div>
@@ -455,13 +456,10 @@ export default function EssayGraderPage() {
                 {/* Submit */}
                 <button
                   type="submit"
-                  disabled={loading || !essayText.trim() || !gradeLevel}
+                  disabled={loading || !textToGrade.trim() || !gradeLevel}
                   className="w-full py-3.5 px-5 rounded-xl text-sm font-semibold text-white transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                   style={{
-                    backgroundColor:
-                      loading || !essayText.trim() || !gradeLevel
-                        ? "#fcd34d"
-                        : "#f59e0b",
+                    backgroundColor: loading || !textToGrade.trim() || !gradeLevel ? "#fcd34d" : "#f59e0b",
                     boxShadow: "0 4px 14px 0 rgba(245,158,11,0.25)",
                   }}
                 >
@@ -472,6 +470,13 @@ export default function EssayGraderPage() {
                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
                       </svg>
                       Grading…
+                    </>
+                  ) : result ? (
+                    <>
+                      Grade Another Essay
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
+                      </svg>
                     </>
                   ) : (
                     <>

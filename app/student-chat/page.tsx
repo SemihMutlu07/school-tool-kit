@@ -323,7 +323,15 @@ function SetupScreen({
             </svg>
           </button>
 
-          <p className="text-center text-xs text-stone-400 mt-4">
+          <button
+            type="button"
+            onClick={() => onStart("General", "")}
+            className="w-full text-sm text-stone-400 hover:text-stone-600 transition-colors mt-3"
+          >
+            Skip setup — just start chatting →
+          </button>
+
+          <p className="text-center text-xs text-stone-400 mt-3">
             Tip: type &ldquo;quiz me&rdquo; any time to practice!
           </p>
         </div>

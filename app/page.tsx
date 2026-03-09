@@ -271,6 +271,33 @@ export default function Home() {
         />
       </section>
 
+      {/* ── Unified Experience Banner ───────────────────── */}
+      <section className="max-w-3xl mx-auto px-6 pb-10 -mt-4">
+        <Link
+          href="/chat"
+          className="group flex items-center justify-between gap-4 w-full rounded-2xl border px-6 py-4 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg"
+          style={{ backgroundColor: "#f5f3ff", borderColor: "#ddd6fe" }}
+        >
+          <div className="flex items-center gap-3.5 min-w-0">
+            <div className="w-10 h-10 rounded-xl flex items-center justify-center text-xl shrink-0"
+              style={{ backgroundColor: "#ede9fe" }}>
+              ✨
+            </div>
+            <div className="min-w-0">
+              <p className="text-sm font-bold text-violet-900" style={{ fontFamily: "var(--font-display)" }}>
+                Try the unified experience →
+              </p>
+              <p className="text-xs text-violet-500 mt-0.5 truncate">
+                One chat interface — lesson plans, essay grading, tutoring, all in one.
+              </p>
+            </div>
+          </div>
+          <svg className="w-5 h-5 text-violet-400 shrink-0 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+          </svg>
+        </Link>
+      </section>
+
       {/* ── Tool Cards ─────────────────────────────────── */}
       <section className="max-w-6xl mx-auto px-6 pb-28">
         {/* Section label */}
@@ -279,7 +306,7 @@ export default function Home() {
             className="text-sm font-semibold uppercase tracking-widest"
             style={{ color: "#f97316" }}
           >
-            Choose a Tool
+            Or choose a specific tool
           </p>
         </div>
 

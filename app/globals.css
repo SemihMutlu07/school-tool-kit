@@ -3,6 +3,8 @@
 :root {
   --background: #fffbf7;
   --foreground: #1c1917;
+  --font-display: "Plus Jakarta Sans", system-ui, sans-serif;
+  --font-body: "Inter", system-ui, sans-serif;
 }
 
 @theme inline {
@@ -14,5 +16,5 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-body, system-ui, sans-serif);
+  font-family: var(--font-body);
 }

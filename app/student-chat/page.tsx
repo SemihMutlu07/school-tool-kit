@@ -171,7 +171,7 @@ export default function StudentChatPage() {
         body: JSON.stringify({ messages: historyForApi, newMessage: text, gradeLevel, topic: activeTopic }),
       });
       const data = await res.json();
-      if (data.error) throw new Error(data.error);
+      if (!res.ok || data.error) throw new Error(data.error || `Server error ${res.status}`);
       const { mode, content } = parseMode(data.reply);
       setMessages((prev) => [...prev, { role: "assistant", content: data.reply, mode, displayContent: content }]);
     } catch (err) {
@@ -244,7 +244,7 @@ export default function StudentChatPage() {
       </header>
 
       {/* ── Scrollable area ── */}
-      <div className="flex-1 overflow-y-auto" ref={undefined}>
+      <div className="flex-1 overflow-y-auto">
         <div className="max-w-2xl mx-auto w-full px-4">
 
           {/* ── SETUP (shown when not started) ── */}
@@ -362,7 +362,7 @@ export default function StudentChatPage() {
 
           {/* ── MESSAGES (shown when started) ── */}
           {started && (
-            <div className="py-4 space-y-1" ref={(el) => { if (el) { /* messages container */ } }}>
+            <div className="py-4 space-y-1">
               {messages.map((msg, i) => (
                 <div key={i} className={`flex items-end gap-2 ${msg.role === "user" ? "flex-row-reverse" : "flex-row"}`}>
                   {msg.role === "assistant" && (

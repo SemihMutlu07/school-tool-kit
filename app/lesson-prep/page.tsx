@@ -128,28 +128,56 @@ function SectionCard({
   icon,
   accentColor,
   children,
+  copyText,
 }: {
   title: string;
   icon: string;
   accentColor: string;
   children: React.ReactNode;
+  copyText?: string;
 }) {
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = async () => {
+    if (!copyText) return;
+    await navigator.clipboard.writeText(copyText);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
   return (
     <div
       className="bg-white rounded-2xl border border-stone-200 overflow-hidden shadow-sm"
       style={{ borderTop: `3px solid ${accentColor}` }}
     >
       <div
-        className="px-6 py-4 border-b border-stone-100 flex items-center gap-2.5"
+        className="px-6 py-4 border-b border-stone-100 flex items-center gap-2.5 group"
         style={{ backgroundColor: `${accentColor}08` }}
       >
         <span className="text-xl leading-none">{icon}</span>
         <h3
-          className="font-bold text-stone-800 text-base"
+          className="font-bold text-stone-800 text-base flex-1"
           style={{ fontFamily: "var(--font-display)" }}
         >
           {title}
         </h3>
+        {copyText && (
+          <button
+            onClick={handleCopy}
+            className="opacity-0 group-hover:opacity-100 transition-opacity p-1.5 rounded-lg hover:bg-black/5"
+            title={`Copy ${title}`}
+          >
+            {copied ? (
+              <svg className="w-4 h-4 text-emerald-500" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z" clipRule="evenodd" />
+              </svg>
+            ) : (
+              <svg className="w-4 h-4 text-stone-400" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M15.666 3.888A2.25 2.25 0 0 0 13.5 2.25h-3c-1.03 0-1.9.693-2.166 1.638m7.332 0c.055.194.084.4.084.612v0a.75.75 0 0 1-.75.75H9a.75.75 0 0 1-.75-.75v0c0-.212.03-.418.084-.612m7.332 0c.646.049 1.288.11 1.927.184 1.1.128 1.907 1.077 1.907 2.185V19.5a2.25 2.25 0 0 1-2.25 2.25H6.75A2.25 2.25 0 0 1 4.5 19.5V6.257c0-1.108.806-2.057 1.907-2.185a48.208 48.208 0 0 1 1.927-.184" />
+              </svg>
+            )}
+          </button>
+        )}
       </div>
       <div className="px-6 py-5">{children}</div>
     </div>
@@ -256,7 +284,7 @@ export default function LessonPrepPage() {
         body: JSON.stringify({ topic, gradeLevel, duration, notes }),
       });
       const data = await res.json();
-      if (data.error) throw new Error(data.error);
+      if (!res.ok || data.error) throw new Error(data.error || `Server error ${res.status}`);
       setPlan(data.result);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong.");
@@ -543,6 +571,22 @@ export default function LessonPrepPage() {
                   Fill in the form and click Generate — your complete lesson
                   plan will appear here.
                 </p>
+                <div className="flex flex-wrap justify-center gap-2 mt-5">
+                  {[
+                    { label: "Photosynthesis · Middle School", topic: "Photosynthesis", grade: "Middle School (Grades 6–8)" },
+                    { label: "World War II causes · High School", topic: "World War II causes", grade: "High School (Grades 9–12)" },
+                    { label: "Fractions · Elementary", topic: "Fractions", grade: "Elementary (Grades 3–5)" },
+                  ].map((ex) => (
+                    <button
+                      key={ex.label}
+                      onClick={() => { setTopic(ex.topic); setGradeLevel(ex.grade); }}
+                      className="text-xs font-medium px-3 py-1.5 rounded-full border transition-all hover:border-orange-300 hover:bg-orange-50 hover:text-orange-700"
+                      style={{ borderColor: "#e7e5e4", color: "#78716c", backgroundColor: "#fafaf9" }}
+                    >
+                      {ex.label}
+                    </button>
+                  ))}
+                </div>
               </div>
             )}
 
@@ -582,6 +626,7 @@ export default function LessonPrepPage() {
                   title="Learning Objectives"
                   icon="🎯"
                   accentColor="#f97316"
+                  copyText={plan.objectives.map((o, i) => `${i + 1}. ${o}`).join("\n")}
                 >
                   <ol className="space-y-2.5">
                     {plan.objectives.map((obj, i) => (
@@ -603,6 +648,7 @@ export default function LessonPrepPage() {
                   title="Key Vocabulary"
                   icon="📖"
                   accentColor="#8b5cf6"
+                  copyText={plan.vocabulary.map((v) => `${v.term}: ${v.definition}`).join("\n")}
                 >
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     {plan.vocabulary.map((v, i) => (
@@ -627,6 +673,7 @@ export default function LessonPrepPage() {
                   title="Lesson Outline"
                   icon="🗂️"
                   accentColor="#3b82f6"
+                  copyText={plan.outline.map((p) => `[${p.duration}] ${p.phase}: ${p.activity}`).join("\n")}
                 >
                   <div className="space-y-0">
                     {plan.outline.map((phase, i) => (
@@ -645,7 +692,7 @@ export default function LessonPrepPage() {
                         </div>
                         {/* Content */}
                         <div className="pb-5 flex-1">
-                          <div className="flex items-baseline gap-2 mb-1">
+                          <div className="flex items-center gap-2 mb-1">
                             <span
                               className="font-semibold text-sm text-stone-800"
                               style={{ fontFamily: "var(--font-display)" }}
@@ -653,13 +700,16 @@ export default function LessonPrepPage() {
                               {phase.phase}
                             </span>
                             <span
-                              className="text-xs font-medium px-2 py-0.5 rounded-full"
-                              style={{
-                                backgroundColor: "#eff6ff",
-                                color: "#3b82f6",
-                              }}
+                              className="text-xs font-semibold px-2.5 py-1 rounded-full"
+                              style={
+                                i === 0
+                                  ? { backgroundColor: "#fff7ed", color: "#c2410c", border: "1px solid #fdba74" }
+                                  : i === 1
+                                  ? { backgroundColor: "#eff6ff", color: "#1d4ed8", border: "1px solid #93c5fd" }
+                                  : { backgroundColor: "#f0fdf4", color: "#15803d", border: "1px solid #86efac" }
+                              }
                             >
-                              {phase.duration}
+                              ⏱ {phase.duration}
                             </span>
                           </div>
                           <p className="text-sm text-stone-600 leading-relaxed">
@@ -676,6 +726,7 @@ export default function LessonPrepPage() {
                   title="Discussion Questions"
                   icon="💬"
                   accentColor="#f59e0b"
+                  copyText={plan.discussionQuestions.map((q, i) => `Q${i + 1}. ${q}`).join("\n")}
                 >
                   <ul className="space-y-3">
                     {plan.discussionQuestions.map((q, i) => (
@@ -699,6 +750,7 @@ export default function LessonPrepPage() {
                   title="Assessment Suggestion"
                   icon="📊"
                   accentColor="#10b981"
+                  copyText={plan.assessment}
                 >
                   <p className="text-sm text-stone-700 leading-relaxed">
                     {plan.assessment}
@@ -710,6 +762,7 @@ export default function LessonPrepPage() {
                   title="Differentiation Tips"
                   icon="🌱"
                   accentColor="#ec4899"
+                  copyText={`Struggling Learners:\n${plan.differentiation.struggling}\n\nAdvanced Learners:\n${plan.differentiation.advanced}`}
                 >
                   <div className="space-y-4">
                     <div className="rounded-xl p-4 border border-rose-100" style={{ backgroundColor: "#fff1f2" }}>

@@ -13,58 +13,46 @@ type GradeResult = {
   shareableSummary: string;
 };
 
-// ── PDF / file text extraction (no external packages) ─────────────────────────
-
-function looksLikeRealText(text: string): boolean {
-  const words = text.split(/\s+/).filter((w) => w.length > 0);
-  if (words.length < 30) return false;
-  // Count words that are purely alphabetic and plausible length (2–20 chars)
-  const natural = words.filter((w) => /^[a-zA-Z'-]{2,20}$/.test(w));
-  return natural.length / words.length > 0.55;
-}
+// ── PDF / file text extraction via pdf.js ─────────────────────────────────────
 
 async function extractFileText(file: File): Promise<{ text: string; error?: string }> {
-  // Plain text files — always works
-  if (file.type === "text/plain" || file.name.endsWith(".txt")) {
-    return new Promise((resolve, reject) => {
+  const FAIL = { text: "", error: "Could not extract text from this PDF, please paste your essay text instead." };
+
+  // Plain text files
+  if (file.type === "text/plain" || file.name.toLowerCase().endsWith(".txt")) {
+    return new Promise((resolve) => {
       const reader = new FileReader();
       reader.onload = (e) => resolve({ text: (e.target?.result as string) ?? "" });
-      reader.onerror = reject;
+      reader.onerror = () => resolve(FAIL);
       reader.readAsText(file);
     });
   }
 
-  // PDF — BT/ET extraction only (never fall back to raw ASCII dump)
-  return new Promise((resolve) => {
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const buf = e.target?.result as ArrayBuffer;
-      const raw = new TextDecoder("latin1").decode(buf);
-      const chunks: string[] = [];
+  // PDF — use pdf.js for reliable extraction (handles compressed streams)
+  try {
+    const pdfjsLib = await import("pdfjs-dist");
+    pdfjsLib.GlobalWorkerOptions.workerSrc = "/pdf.worker.min.mjs";
 
-      const btEt = /BT([\s\S]*?)ET/g;
-      let m: RegExpExecArray | null;
-      while ((m = btEt.exec(raw)) !== null) {
-        const paren = /\(([^)\\]*(?:\\.[^)\\]*)*)\)/g;
-        let p: RegExpExecArray | null;
-        while ((p = paren.exec(m[1])) !== null) {
-          const t = p[1]
-            .replace(/\\n/g, " ").replace(/\\r/g, " ").replace(/\\t/g, " ")
-            .replace(/\\\(/g, "(").replace(/\\\)/g, ")").replace(/\\\\/g, "\\");
-          if (/[a-zA-Z]{2,}/.test(t)) chunks.push(t);
-        }
-      }
+    const arrayBuffer = await file.arrayBuffer();
+    const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
 
-      const joined = chunks.join(" ").replace(/\s+/g, " ").trim();
+    const pages: string[] = [];
+    for (let i = 1; i <= pdf.numPages; i++) {
+      const page = await pdf.getPage(i);
+      const content = await page.getTextContent();
+      const pageText = content.items
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        .map((item: any) => ("str" in item ? item.str : ""))
+        .join(" ");
+      pages.push(pageText);
+    }
 
-      if (looksLikeRealText(joined)) {
-        resolve({ text: joined });
-      } else {
-        resolve({ text: "", error: "Could not extract text from this PDF. Please paste the essay text instead." });
-      }
-    };
-    reader.readAsArrayBuffer(file);
-  });
+    const text = pages.join("\n").replace(/\s+/g, " ").trim();
+    if (!text || text.length < 30) return FAIL;
+    return { text };
+  } catch {
+    return FAIL;
+  }
 }
 
 // ── Loading Animation — pencil writing ────────────────────────────────────────
@@ -244,18 +232,20 @@ export default function EssayGraderPage() {
 
     setPdfError("");
     setUploadedFile(null);
-    if (fileInputRef.current) fileInputRef.current.value = "";
 
     const { text, error: extractError } = await extractFileText(file);
 
+    // Reset after extraction so the same file can be re-selected if needed
+    if (fileInputRef.current) fileInputRef.current.value = "";
+
     if (extractError || !text) {
-      setPdfError(extractError ?? "Could not extract text from this PDF. Please paste the essay text instead.");
+      setPdfError(extractError ?? "Could not extract text from this PDF, please paste your essay text instead.");
       return;
     }
 
     const wordCount = text.trim().split(/\s+/).filter(Boolean).length;
     setUploadedFile({ name: file.name, text, wordCount });
-    setEssayText(""); // clear manual textarea when file loaded
+    setEssayText("");
   };
 
   const removeFile = () => {
@@ -279,7 +269,7 @@ export default function EssayGraderPage() {
         body: JSON.stringify({ essayText: textToGrade, gradeLevel }),
       });
       const data = await res.json();
-      if (data.error) throw new Error(data.error);
+      if (!res.ok || data.error) throw new Error(data.error || `Server error ${res.status}`);
       setResult(data.result);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong.");
@@ -409,7 +399,7 @@ export default function EssayGraderPage() {
                   </div>
 
                   <div className="mt-3">
-                    <input ref={fileInputRef} type="file" accept=".pdf,.txt"
+                    <input ref={fileInputRef} type="file" accept=".pdf,.txt,application/pdf,text/plain"
                       className="hidden" onChange={handleFileUpload} id="file-upload" />
                     <label htmlFor="file-upload"
                       className="flex items-center justify-center gap-2 w-full py-2.5 px-4 rounded-xl border border-dashed border-stone-300 text-sm text-stone-500 cursor-pointer hover:border-amber-300 hover:text-amber-600 hover:bg-amber-50 transition-all">

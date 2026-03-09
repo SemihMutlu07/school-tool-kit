@@ -182,6 +182,49 @@ export default function StudentChatPage() {
     }
   }, [input, loading, messages, gradeLevel, activeTopic]);
 
+  const tryExample = useCallback(async () => {
+    const exGrade = "Middle School (Grades 6–8)";
+    const exTopic = "The Solar System";
+    const firstMsg = "Can you explain how planets orbit the sun?";
+
+    setGradeLevel(exGrade);
+    setActiveTopic(exTopic);
+    setStarted(true);
+    setError("");
+
+    const welcomeMsg: Message = {
+      role: "assistant",
+      content: "[MODE: explanation] Welcome!",
+      mode: "explanation",
+      displayContent: `Welcome to your study session! Let's explore **${exTopic}** together. Ask me questions, or say **"quiz me"** anytime to practice with hints. Ready? 🚀`,
+    };
+    const userMsg: Message = { role: "user", content: firstMsg };
+    setMessages([welcomeMsg, userMsg]);
+    setLoading(true);
+
+    try {
+      const res = await fetch("/api/student-chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          messages: [{ role: "assistant", content: welcomeMsg.content }],
+          newMessage: firstMsg,
+          gradeLevel: exGrade,
+          topic: exTopic,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok || data.error) throw new Error(data.error || `Server error ${res.status}`);
+      const { mode, content } = parseMode(data.reply);
+      setMessages(prev => [...prev, { role: "assistant", content: data.reply, mode, displayContent: content }]);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Something went wrong.");
+    } finally {
+      setLoading(false);
+      setTimeout(() => inputRef.current?.focus(), 50);
+    }
+  }, []);
+
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendMessage(); }
   };
@@ -326,6 +369,15 @@ export default function StudentChatPage() {
                   onChange={(e) => setTopic(e.target.value)}
                 />
               </div>
+
+              {/* Try Example */}
+              <button type="button" onClick={tryExample}
+                className="w-full py-3 px-6 rounded-xl text-sm font-semibold transition-all duration-200 flex items-center justify-center gap-2 mb-3"
+                style={{ backgroundColor: "#eff6ff", color: "#1d4ed8", border: "2px solid #bfdbfe" }}
+                onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = "#dbeafe"; }}
+                onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = "#eff6ff"; }}>
+                🌌 Try Example: The Solar System
+              </button>
 
               {/* Start button */}
               <button type="button" disabled={!activeGrade}

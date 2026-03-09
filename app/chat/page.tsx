@@ -153,14 +153,25 @@ function ModeBadge({ mode }: { mode: Mode }) {
   );
 }
 
+const EXAMPLE_ESSAY_TEXT =
+  "The invention of the printing press in the 15th century was one of the most transformative events in human history. Before Gutenberg's press, books were hand-copied by scribes, making them rare and expensive. The press allowed identical copies to be produced quickly and cheaply, spreading literacy and new ideas across Europe. This democratization of knowledge directly contributed to the Renaissance, the Reformation, and eventually the Scientific Revolution. Without it, these intellectual movements would have spread far more slowly, if at all.";
+
 // ── Welcome screen (shown before any message) ─────────────────────────────────
 
-function WelcomeScreen({ onSuggestion }: { onSuggestion: (text: string) => void }) {
-  const suggestions = [
-    { label: "📋 Ders planı hazırla", text: "Fotosentez konusunda 7. sınıf için ders planı hazırlar mısın?" },
-    { label: "✏️ Ödev değerlendir", text: "Bu yazıyı 10. sınıf için değerlendirir misin?\n\n[Buraya yazıyı yapıştır]" },
-    { label: "💬 Bir konuyu açıkla", text: "Fotosentezi bana açıklar mısın?" },
-    { label: "🎯 Quiz yap", text: "Matematik — kesirler konusunda bana quiz yap!" },
+function WelcomeScreen({ onSend }: { onSend: (text: string) => void }) {
+  const chips = [
+    {
+      label: "📋 Make a lesson plan",
+      text: "Make a lesson plan for photosynthesis, grade 9",
+    },
+    {
+      label: "✏️ Grade this essay",
+      text: `Grade this essay for high school:\n\n"${EXAMPLE_ESSAY_TEXT}"`,
+    },
+    {
+      label: "💬 Explain a concept",
+      text: "Explain black holes like I'm in middle school",
+    },
   ];
 
   return (
@@ -176,12 +187,12 @@ function WelcomeScreen({ onSuggestion }: { onSuggestion: (text: string) => void 
         Merhaba! Ders planı hazırlamak, ödev değerlendirmek veya bir konuyu öğrenmek için yazabilirsin.
       </p>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 w-full">
-        {suggestions.map((s) => (
-          <button key={s.label} onClick={() => onSuggestion(s.text)}
+      <div className="flex flex-col gap-2 w-full">
+        {chips.map((c) => (
+          <button key={c.label} onClick={() => onSend(c.text)}
             className="text-left px-4 py-3 rounded-xl border text-sm font-medium transition-all hover:border-violet-300 hover:bg-violet-50 hover:text-violet-700"
             style={{ borderColor: "#e7e5e4", color: "#78716c", backgroundColor: "#fafaf9" }}>
-            {s.label}
+            {c.label}
           </button>
         ))}
       </div>
@@ -303,7 +314,7 @@ export default function ChatPage() {
         <div className="max-w-2xl mx-auto w-full px-4">
 
           {messages.length === 0 && !loading && (
-            <WelcomeScreen onSuggestion={(text) => { setInput(text); setTimeout(() => inputRef.current?.focus(), 50); }} />
+            <WelcomeScreen onSend={sendMessage} />
           )}
 
           {messages.length > 0 && (

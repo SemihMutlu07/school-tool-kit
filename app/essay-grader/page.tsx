@@ -254,19 +254,18 @@ export default function EssayGraderPage() {
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!textToGrade.trim() || !gradeLevel) return;
+  const EXAMPLE_ESSAY =
+    "The invention of the printing press in the 15th century was one of the most transformative events in human history. Before Gutenberg's press, books were hand-copied by scribes, making them rare and expensive. The press allowed identical copies to be produced quickly and cheaply, spreading literacy and new ideas across Europe. This democratization of knowledge directly contributed to the Renaissance, the Reformation, and eventually the Scientific Revolution. Without it, these intellectual movements would have spread far more slowly, if at all.";
 
+  const gradeEssay = async (text: string, grade: string) => {
     setLoading(true);
     setResult(null);
     setError("");
-
     try {
       const res = await fetch("/api/essay-grader", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ essayText: textToGrade, gradeLevel }),
+        body: JSON.stringify({ essayText: text, gradeLevel: grade }),
       });
       const data = await res.json();
       if (!res.ok || data.error) throw new Error(data.error || `Server error ${res.status}`);
@@ -276,6 +275,21 @@ export default function EssayGraderPage() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!textToGrade.trim() || !gradeLevel) return;
+    await gradeEssay(textToGrade, gradeLevel);
+  };
+
+  const tryExample = () => {
+    const g = "High School (Grades 9–12)";
+    setEssayText(EXAMPLE_ESSAY);
+    setUploadedFile(null);
+    setPdfError("");
+    setGradeLevel(g);
+    gradeEssay(EXAMPLE_ESSAY, g);
   };
 
   const inputClass =
@@ -328,15 +342,26 @@ export default function EssayGraderPage() {
           <div className="lg:sticky lg:top-24 space-y-4">
             <div className="bg-white rounded-2xl border border-stone-200 shadow-sm overflow-hidden">
               <div
-                className="px-6 py-5 border-b border-stone-100"
+                className="px-6 py-5 border-b border-stone-100 flex items-start justify-between gap-3"
                 style={{ background: "linear-gradient(135deg, #fffbeb 0%, #fffbf7 100%)" }}
               >
-                <h2 className="text-lg font-bold text-stone-900" style={{ fontFamily: "var(--font-display)" }}>
-                  Grade an Essay
-                </h2>
-                <p className="text-sm text-stone-500 mt-1">
-                  Paste or upload a student essay below.
-                </p>
+                <div>
+                  <h2 className="text-lg font-bold text-stone-900" style={{ fontFamily: "var(--font-display)" }}>
+                    Grade an Essay
+                  </h2>
+                  <p className="text-sm text-stone-500 mt-1">
+                    Paste or upload a student essay below.
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={tryExample}
+                  disabled={loading}
+                  className="shrink-0 flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg border transition-all hover:border-amber-300 hover:bg-amber-50 hover:text-amber-700 disabled:opacity-40"
+                  style={{ borderColor: "#e7e5e4", color: "#78716c" }}
+                >
+                  ✨ Try Example
+                </button>
               </div>
 
               <form onSubmit={handleSubmit} className="px-6 py-6 space-y-5">

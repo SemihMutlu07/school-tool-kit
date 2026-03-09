@@ -269,19 +269,15 @@ export default function LessonPrepPage() {
   const [plan, setPlan] = useState<LessonPlan | null>(null);
   const [error, setError] = useState("");
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!topic.trim() || !gradeLevel) return;
-
+  const generatePlan = async (t: string, g: string, d: string, n: string) => {
     setLoading(true);
     setPlan(null);
     setError("");
-
     try {
       const res = await fetch("/api/lesson-prep", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ topic, gradeLevel, duration, notes }),
+        body: JSON.stringify({ topic: t, gradeLevel: g, duration: d, notes: n }),
       });
       const data = await res.json();
       if (!res.ok || data.error) throw new Error(data.error || `Server error ${res.status}`);
@@ -291,6 +287,24 @@ export default function LessonPrepPage() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!topic.trim() || !gradeLevel) return;
+    await generatePlan(topic, gradeLevel, duration, notes);
+  };
+
+  const tryExample = () => {
+    const t = "Photosynthesis";
+    const g = "High School (Grades 9–12)";
+    const d = "30";
+    const n = "Focus on visual learners";
+    setTopic(t);
+    setGradeLevel(g);
+    setDuration(d);
+    setNotes(n);
+    generatePlan(t, g, d, n);
   };
 
   const inputClass =
@@ -360,21 +374,32 @@ export default function LessonPrepPage() {
           <div className="lg:sticky lg:top-24">
             <div className="bg-white rounded-2xl border border-stone-200 shadow-sm overflow-hidden">
               <div
-                className="px-6 py-5 border-b border-stone-100"
+                className="px-6 py-5 border-b border-stone-100 flex items-start justify-between gap-3"
                 style={{
                   background:
                     "linear-gradient(135deg, #fff7ed 0%, #fffbf7 100%)",
                 }}
               >
-                <h2
-                  className="text-lg font-bold text-stone-900"
-                  style={{ fontFamily: "var(--font-display)" }}
+                <div>
+                  <h2
+                    className="text-lg font-bold text-stone-900"
+                    style={{ fontFamily: "var(--font-display)" }}
+                  >
+                    Build a Lesson Plan
+                  </h2>
+                  <p className="text-sm text-stone-500 mt-1">
+                    Fill in the details below and Claude will do the rest.
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={tryExample}
+                  disabled={loading}
+                  className="shrink-0 flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg border transition-all hover:border-orange-300 hover:bg-orange-50 hover:text-orange-700 disabled:opacity-40"
+                  style={{ borderColor: "#e7e5e4", color: "#78716c" }}
                 >
-                  Build a Lesson Plan
-                </h2>
-                <p className="text-sm text-stone-500 mt-1">
-                  Fill in the details below and Claude will do the rest.
-                </p>
+                  ✨ Try Example
+                </button>
               </div>
 
               <form onSubmit={handleSubmit} className="px-6 py-6 space-y-5">

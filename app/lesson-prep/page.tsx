@@ -198,11 +198,11 @@ function CopyButton({ text }: { text: string }) {
   return (
     <button
       onClick={handleCopy}
-      className="flex items-center gap-1.5 text-sm font-medium px-3 py-1.5 rounded-lg border transition-all duration-200"
+      className="flex items-center gap-1.5 text-sm font-semibold px-4 py-2 rounded-xl transition-all duration-200"
       style={{
-        borderColor: copied ? "#10b981" : "#e7e5e4",
-        color: copied ? "#10b981" : "#78716c",
-        backgroundColor: copied ? "#f0fdf4" : "transparent",
+        backgroundColor: copied ? "#10b981" : "#f97316",
+        color: "#fff",
+        boxShadow: copied ? "0 4px 12px rgba(16,185,129,0.3)" : "0 4px 12px rgba(249,115,22,0.3)",
       }}
     >
       {copied ? (
@@ -327,7 +327,7 @@ export default function LessonPrepPage() {
           <div className="flex items-center gap-3">
             <Link
               href="/"
-              className="flex items-center gap-1.5 text-sm font-medium text-stone-500 hover:text-stone-800 transition-colors"
+              className="flex items-center gap-1.5 text-sm font-semibold text-stone-500 hover:text-stone-800 transition-colors"
             >
               <svg
                 className="w-4 h-4"
@@ -345,18 +345,23 @@ export default function LessonPrepPage() {
               All tools
             </Link>
             <span className="text-stone-300">/</span>
-            <div className="flex items-center gap-2">
-              <span className="text-xl leading-none">📋</span>
-              <span
-                className="font-bold text-stone-900"
-                style={{ fontFamily: "var(--font-display)" }}
-              >
-                Lesson Prep Assistant
+            <div className="flex flex-col">
+              <div className="flex items-center gap-2">
+                <span className="text-xl leading-none">📋</span>
+                <span
+                  className="font-bold text-stone-900"
+                  style={{ fontFamily: "var(--font-display)" }}
+                >
+                  Lesson Prep Assistant
+                </span>
+              </div>
+              <span className="text-[10px] text-stone-400 pl-7 -mt-0.5 font-medium tracking-wide">
+                Madlen AI Toolkit
               </span>
             </div>
           </div>
           <span
-            className="text-xs font-medium px-2.5 py-1 rounded-full border"
+            className="text-xs font-semibold px-2.5 py-1 rounded-full border"
             style={{
               backgroundColor: "#fff7ed",
               borderColor: "#fdba74",
@@ -679,13 +684,13 @@ export default function LessonPrepPage() {
                     {plan.vocabulary.map((v, i) => (
                       <div
                         key={i}
-                        className="rounded-xl px-4 py-3 border border-stone-100"
+                        className="flex flex-col rounded-xl px-4 py-3 border border-stone-100"
                         style={{ backgroundColor: "#faf5ff" }}
                       >
                         <span className="font-semibold text-sm text-violet-700">
                           {v.term}
                         </span>
-                        <p className="text-xs text-stone-500 mt-1 leading-relaxed">
+                        <p className="flex-1 text-xs text-stone-500 mt-1 leading-relaxed">
                           {v.definition}
                         </p>
                       </div>
@@ -790,33 +795,37 @@ export default function LessonPrepPage() {
                   copyText={`Struggling Learners:\n${plan.differentiation.struggling}\n\nAdvanced Learners:\n${plan.differentiation.advanced}`}
                 >
                   <div className="space-y-4">
-                    <div className="rounded-xl p-4 border border-rose-100" style={{ backgroundColor: "#fff1f2" }}>
-                      <div className="flex items-center gap-2 mb-2">
+                    <div className="rounded-xl overflow-hidden border border-rose-200">
+                      <div className="flex items-center gap-2 px-4 py-2.5" style={{ backgroundColor: "#ffe4e6" }}>
                         <span className="text-base">🤝</span>
                         <span
-                          className="text-sm font-semibold text-rose-700"
+                          className="text-sm font-bold text-rose-800"
                           style={{ fontFamily: "var(--font-display)" }}
                         >
                           Struggling Learners
                         </span>
                       </div>
-                      <p className="text-sm text-stone-600 leading-relaxed">
-                        {plan.differentiation.struggling}
-                      </p>
+                      <div className="px-4 py-3" style={{ backgroundColor: "#fff1f2" }}>
+                        <p className="text-sm text-stone-600 leading-relaxed">
+                          {plan.differentiation.struggling}
+                        </p>
+                      </div>
                     </div>
-                    <div className="rounded-xl p-4 border border-emerald-100" style={{ backgroundColor: "#f0fdf4" }}>
-                      <div className="flex items-center gap-2 mb-2">
+                    <div className="rounded-xl overflow-hidden border border-emerald-200">
+                      <div className="flex items-center gap-2 px-4 py-2.5" style={{ backgroundColor: "#bbf7d0" }}>
                         <span className="text-base">🚀</span>
                         <span
-                          className="text-sm font-semibold text-emerald-700"
+                          className="text-sm font-bold text-emerald-900"
                           style={{ fontFamily: "var(--font-display)" }}
                         >
                           Advanced Learners
                         </span>
                       </div>
-                      <p className="text-sm text-stone-600 leading-relaxed">
-                        {plan.differentiation.advanced}
-                      </p>
+                      <div className="px-4 py-3" style={{ backgroundColor: "#f0fdf4" }}>
+                        <p className="text-sm text-stone-600 leading-relaxed">
+                          {plan.differentiation.advanced}
+                        </p>
+                      </div>
                     </div>
                   </div>
                 </SectionCard>

@@ -275,7 +275,7 @@ export default function Home() {
       </section>
 
       {/* ── Unified Experience Banner ───────────────────── */}
-      <section className="max-w-3xl mx-auto px-6 pb-10 -mt-4">
+      <section className="relative z-10 max-w-3xl mx-auto px-6 pb-10 -mt-4">
         <Link
           href="/chat"
           className="group flex items-center justify-between gap-4 w-full rounded-2xl border px-6 py-4 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg"

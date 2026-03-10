@@ -147,7 +147,7 @@ function SectionCard({
 
   return (
     <div
-      className="bg-white rounded-2xl border border-stone-200 overflow-hidden shadow-sm"
+      className="bg-white rounded-2xl border-2 border-[#010001] shadow-[4px_4px_0px_0px_#010001] overflow-hidden"
       style={{ borderTop: `3px solid ${accentColor}` }}
     >
       <div
@@ -198,11 +198,10 @@ function CopyButton({ text }: { text: string }) {
   return (
     <button
       onClick={handleCopy}
-      className="flex items-center gap-1.5 text-sm font-semibold px-4 py-2 rounded-xl transition-all duration-200"
+      className="flex items-center gap-1.5 text-sm font-semibold px-4 py-2 rounded-xl border-2 border-[#010001] shadow-[2px_2px_0px_0px_#010001] hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 transition-all duration-200"
       style={{
         backgroundColor: copied ? "#10b981" : "#BC5F04",
         color: "#fff",
-        boxShadow: copied ? "0 4px 12px rgba(16,185,129,0.3)" : "0 4px 12px rgba(188,95,4,0.3)",
       }}
     >
       {copied ? (
@@ -362,10 +361,9 @@ export default function LessonPrepPage() {
             </div>
           </div>
           <span
-            className="text-xs font-semibold px-2.5 py-1 rounded-full border"
+            className="text-xs font-semibold px-2.5 py-1 rounded-full border-2 border-[#010001]"
             style={{
               backgroundColor: "#FDF0E3",
-              borderColor: "#E8B87A",
               color: "#BC5F04",
             }}
           >
@@ -415,7 +413,7 @@ export default function LessonPrepPage() {
         <div className="grid grid-cols-1 lg:grid-cols-[380px_1fr] gap-8 items-start">
           {/* ── Form ────────────────────────────────────── */}
           <div className="lg:sticky lg:top-8">
-            <div className="bg-white rounded-2xl border border-stone-200 shadow-sm overflow-hidden">
+            <div className="bg-white rounded-2xl border-2 border-[#010001] shadow-[4px_4px_0px_0px_#010001] overflow-hidden" style={{ borderLeft: "6px solid #BC5F04" }}>
               <div
                 className="px-6 py-5 border-b border-stone-100 flex items-start justify-between gap-3"
                 style={{
@@ -554,13 +552,12 @@ export default function LessonPrepPage() {
                 <button
                   type="submit"
                   disabled={loading || !topic.trim() || !gradeLevel}
-                  className="w-full py-3.5 px-5 rounded-xl text-sm font-semibold text-white transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                  className="btn-bounce w-full py-4 px-5 rounded-xl text-sm font-semibold text-white border-2 border-[#010001] shadow-[4px_4px_0px_0px_#010001] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                   style={{
                     backgroundColor:
                       loading || !topic.trim() || !gradeLevel
                         ? "#E8B87A"
                         : "#BC5F04",
-                    boxShadow: "0 4px 14px 0 rgba(188,95,4,0.25)",
                   }}
                 >
                   {loading ? (
@@ -584,24 +581,11 @@ export default function LessonPrepPage() {
                           d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
                         />
                       </svg>
-                      Generating…
+                      Sihir Yapılıyor... ✨
                     </>
                   ) : (
                     <>
-                      Generate Lesson Plan
-                      <svg
-                        className="w-4 h-4"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth={2.5}
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09Z"
-                        />
-                      </svg>
+                      Ders Planını Sihirle 🪄
                     </>
                   )}
                 </button>
@@ -639,8 +623,8 @@ export default function LessonPrepPage() {
                     <button
                       key={ex.label}
                       onClick={() => { setTopic(ex.topic); setGradeLevel(ex.grade); }}
-                      className="text-xs font-medium px-3 py-1.5 rounded-full border transition-all hover:border-orange-300 hover:bg-orange-50 hover:text-orange-800"
-                      style={{ borderColor: "#e7e5e4", color: "#78716c", backgroundColor: "#fafaf9" }}
+                      className="text-xs font-medium px-3 py-1.5 rounded-full border-2 border-[#010001] shadow-[2px_2px_0px_0px_#010001] hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 transition-all"
+                      style={{ color: "#78716c", backgroundColor: "#fafaf9" }}
                     >
                       {ex.label}
                     </button>
@@ -824,33 +808,33 @@ export default function LessonPrepPage() {
                   copyText={`Struggling Learners:\n${plan.differentiation.struggling}\n\nAdvanced Learners:\n${plan.differentiation.advanced}`}
                 >
                   <div className="space-y-4">
-                    <div className="rounded-xl overflow-hidden border border-rose-200">
-                      <div className="flex items-center gap-2 px-4 py-2.5" style={{ backgroundColor: "#ffe4e6" }}>
-                        <span className="text-base">🤝</span>
+                    <div className="rounded-2xl border-2 border-[#010001] shadow-[3px_3px_0px_0px_#010001] overflow-hidden" style={{ backgroundColor: "#FDF0E3" }}>
+                      <div className="flex items-center gap-2 px-4 py-2.5 border-b-2 border-[#010001]">
+                        <span className="text-base">🎯</span>
                         <span
-                          className="text-sm font-bold text-rose-800"
+                          className="text-sm font-bold text-stone-800"
                           style={{ fontFamily: "var(--font-display)" }}
                         >
-                          Struggling Learners
+                          Support Mode
                         </span>
                       </div>
-                      <div className="px-4 py-3" style={{ backgroundColor: "#fff1f2" }}>
+                      <div className="px-4 py-3">
                         <p className="text-sm text-stone-600 leading-relaxed">
                           {plan.differentiation.struggling}
                         </p>
                       </div>
                     </div>
-                    <div className="rounded-xl overflow-hidden border border-emerald-200">
-                      <div className="flex items-center gap-2 px-4 py-2.5" style={{ backgroundColor: "#bbf7d0" }}>
-                        <span className="text-base">🚀</span>
+                    <div className="rounded-2xl border-2 border-[#010001] shadow-[3px_3px_0px_0px_#010001] overflow-hidden" style={{ backgroundColor: "#DCFCE7" }}>
+                      <div className="flex items-center gap-2 px-4 py-2.5 border-b-2 border-[#010001]">
+                        <span className="text-base">⚡</span>
                         <span
-                          className="text-sm font-bold text-emerald-900"
+                          className="text-sm font-bold text-stone-800"
                           style={{ fontFamily: "var(--font-display)" }}
                         >
-                          Advanced Learners
+                          Challenge Mode
                         </span>
                       </div>
-                      <div className="px-4 py-3" style={{ backgroundColor: "#f0fdf4" }}>
+                      <div className="px-4 py-3">
                         <p className="text-sm text-stone-600 leading-relaxed">
                           {plan.differentiation.advanced}
                         </p>

@@ -209,10 +209,10 @@ export default function Home() {
 
         <div className="relative max-w-4xl mx-auto px-6 py-28 text-center">
           {/* Eyebrow badge */}
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-sm font-medium mb-8 border"
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-sm font-medium mb-8 border border-2 border-[#010001]"
             style={{
               backgroundColor: "#FDF0E3",
-              borderColor: "#E8B87A",
+              borderColor: "#010001",
               color: "#BC5F04",
             }}
           >
@@ -223,7 +223,7 @@ export default function Home() {
           {/* Headline */}
           <h1
             className="text-5xl sm:text-6xl font-extrabold leading-[1.1] tracking-tight mb-6"
-            style={{ fontFamily: "var(--font-display)", color: "#010001" }}
+            style={{ fontFamily: "var(--font-display)", color: "#010001", letterSpacing: "-0.02em" }}
           >
             Teaching smarter,
             <br />
@@ -334,8 +334,8 @@ export default function Home() {
             return (
               <div
                 key={href}
-                className={`group relative rounded-2xl bg-white border border-stone-200/80 shadow-sm hover:shadow-2xl ${cardGlow} transition-all duration-300 hover:-translate-y-1.5 overflow-hidden flex flex-col`}
-                style={{ borderTop: `3px solid ${topBorderColor}` }}
+                className={`group relative rounded-2xl bg-white border-2 border-[#010001] shadow-[4px_4px_0px_0px_#010001] hover:shadow-[6px_6px_0px_0px_#010001] hover:-translate-y-0.5 transition-all duration-300 overflow-hidden flex flex-col`}
+                style={{ borderTop: `4px solid ${topBorderColor}` }}
               >
                 {/* Subtle inner gradient */}
                 <div
@@ -387,7 +387,7 @@ export default function Home() {
                   {/* CTA button */}
                   <Link
                     href={href}
-                    className={`flex items-center justify-center gap-2 w-full py-3 px-5 rounded-xl text-sm font-semibold transition-all duration-200 ${btnStyle}`}
+                    className={`flex items-center justify-center gap-2 w-full py-3 px-5 rounded-xl border-2 border-[#010001] shadow-[2px_2px_0px_0px_#010001] hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 text-sm font-semibold transition-all duration-200 ${btnStyle}`}
                     style={btnInlineStyle}
                   >
                     Open Tool

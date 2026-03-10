@@ -5,6 +5,7 @@
   --foreground: #010001;
   --font-display: "Plus Jakarta Sans", system-ui, sans-serif;
   --font-body: "Inter", system-ui, sans-serif;
+  --font-handwriting: "Caveat", cursive;
 }
 
 @theme inline {
@@ -17,4 +18,63 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-body);
+}
+
+/* Bounce hover animation */
+@keyframes bounceScale {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.04); }
+}
+.btn-bounce:hover {
+  animation: bounceScale 0.35s ease-in-out;
+}
+
+/* Grade card pop animation */
+@keyframes cardPop {
+  0% { transform: scale(0.96); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+.grade-card-selected {
+  animation: cardPop 0.2s ease-out forwards;
+}
+
+/* Dotted HR for markdown */
+.markdown-body hr {
+  border: none;
+  border-top: 2px dotted #d6d3d1;
+  margin: 1rem 0;
+}
+
+/* Table header burnt caramel */
+.markdown-body table th {
+  background-color: #BC5F04;
+  color: #fff;
+  padding: 6px 10px;
+  text-align: left;
+  font-weight: 600;
+}
+.markdown-body table td {
+  border: 1px solid #e7e5e4;
+  padding: 5px 10px;
+}
+.markdown-body table tr:nth-child(even) td {
+  background-color: #FAFAF7;
+}
+
+/* Folded corner post-it */
+.postit {
+  position: relative;
+  background: #FFFACD;
+  border: 1.5px solid #E8D96A;
+}
+.postit::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 28px;
+  height: 28px;
+  background: linear-gradient(225deg, #fff 50%, #D4C850 50%);
+  border-top: 1.5px solid #E8D96A;
+  border-left: 1.5px solid #E8D96A;
 }

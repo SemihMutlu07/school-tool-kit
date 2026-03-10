@@ -328,8 +328,8 @@ export default function EssayGraderPage() {
             </div>
           </div>
           <span
-            className="text-xs font-medium px-2.5 py-1 rounded-full border"
-            style={{ backgroundColor: "#FDF0E3", borderColor: "#E8B87A", color: "#9A4D03" }}
+            className="text-xs font-medium px-2.5 py-1 rounded-full border-2 border-[#010001]"
+            style={{ backgroundColor: "#FDF0E3", color: "#9A4D03" }}
           >
             For Teachers
           </span>
@@ -340,7 +340,7 @@ export default function EssayGraderPage() {
         <div className="grid grid-cols-1 lg:grid-cols-[400px_1fr] gap-8 items-start">
           {/* ── Form ────────────────────────────────────── */}
           <div className="lg:sticky lg:top-24 space-y-4">
-            <div className="bg-white rounded-2xl border border-stone-200 shadow-sm overflow-hidden">
+            <div className="bg-white rounded-2xl border-2 border-[#010001] shadow-[4px_4px_0px_0px_#010001] overflow-hidden">
               <div
                 className="px-6 py-5 border-b border-stone-100 flex items-start justify-between gap-3"
                 style={{ background: "linear-gradient(135deg, #FDF0E3 0%, #FAFAF7 100%)" }}
@@ -472,10 +472,9 @@ export default function EssayGraderPage() {
                 <button
                   type="submit"
                   disabled={loading || !textToGrade.trim() || !gradeLevel}
-                  className="w-full py-3.5 px-5 rounded-xl text-sm font-semibold text-white transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                  className="w-full py-4 px-5 rounded-xl text-sm font-semibold text-white border-2 border-[#010001] shadow-[4px_4px_0px_0px_#010001] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                   style={{
-                    backgroundColor: loading || !textToGrade.trim() || !gradeLevel ? "#fcd34d" : "#f59e0b",
-                    boxShadow: "0 4px 14px 0 rgba(245,158,11,0.25)",
+                    backgroundColor: loading || !textToGrade.trim() || !gradeLevel ? "#fcd34d" : "#BC5F04",
                   }}
                 >
                   {loading ? (
@@ -484,21 +483,18 @@ export default function EssayGraderPage() {
                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
                       </svg>
-                      Grading…
+                      Değerlendiriliyor... ✨
                     </>
                   ) : result ? (
                     <>
-                      Grade Another Essay
+                      Ödevi Değerlendir 📝
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
                       </svg>
                     </>
                   ) : (
                     <>
-                      Grade Essay
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                      </svg>
+                      Ödevi Değerlendir 📝
                     </>
                   )}
                 </button>
@@ -540,7 +536,7 @@ export default function EssayGraderPage() {
             {result && !loading && (
               <div className="space-y-5">
                 {/* Score hero */}
-                <div className="bg-white rounded-2xl border border-stone-200 shadow-sm overflow-hidden">
+                <div className="bg-white rounded-2xl border-2 border-[#010001] shadow-[4px_4px_0px_0px_#010001] overflow-hidden">
                   <div
                     className="px-7 py-6"
                     style={{ background: "linear-gradient(135deg, #fffbeb 0%, #fff 60%)" }}
@@ -558,7 +554,7 @@ export default function EssayGraderPage() {
                           <span className="text-xs text-stone-400">{gradeLevel}</span>
                         </div>
                         <h2 className="text-xl font-extrabold text-stone-900" style={{ fontFamily: "var(--font-display)" }}>
-                          Grading Complete
+                          İnceleme Bitti, Harika İş! ✨
                         </h2>
                         <p className="text-sm text-stone-500 mt-0.5">
                           {result.criteria.length} criteria evaluated
@@ -566,14 +562,13 @@ export default function EssayGraderPage() {
                       </div>
 
                       {/* Right: big score */}
-                      <div className="text-center">
-                        <div
-                          className="text-5xl font-extrabold leading-none"
-                          style={{ color: totalScoreLabel(result.totalScore).color, fontFamily: "var(--font-display)" }}
-                        >
-                          {result.totalScore}
+                      <div className="text-center py-2">
+                        <div>
+                          <span className="text-8xl font-bold" style={{ fontFamily: "var(--font-handwriting)", color: "#BC5F04" }}>
+                            {result.totalScore}
+                          </span>
+                          <span className="text-4xl font-bold" style={{ fontFamily: "var(--font-handwriting)", color: "#010001" }}>/20</span>
                         </div>
-                        <div className="text-sm text-stone-400 mt-1">out of 20</div>
                         <div
                           className="mt-1.5 text-xs font-bold px-2.5 py-0.5 rounded-full"
                           style={{
@@ -608,7 +603,7 @@ export default function EssayGraderPage() {
                     return (
                       <div
                         key={c.name}
-                        className="bg-white rounded-2xl border border-stone-200 shadow-sm p-5"
+                        className="bg-white rounded-2xl border-2 border-[#010001] shadow-[2px_2px_0px_0px_#010001] p-5"
                         style={{ borderTop: `3px solid ${colors.bar}` }}
                       >
                         <div className="flex items-start justify-between mb-3">
@@ -665,9 +660,9 @@ export default function EssayGraderPage() {
                     <CopyButton text={result.shareableSummary} label="Copy for student" />
                   </div>
                   <div className="px-6 py-5">
-                    <p className="text-sm text-stone-700 leading-relaxed italic">
-                      "{result.shareableSummary}"
-                    </p>
+                    <div className="postit rounded-xl px-5 py-5 pr-10">
+                      <p className="text-sm text-stone-800 leading-relaxed">{result.shareableSummary}</p>
+                    </div>
                     <p className="text-xs text-stone-400 mt-3">
                       Copy and share this message directly with your student.
                     </p>

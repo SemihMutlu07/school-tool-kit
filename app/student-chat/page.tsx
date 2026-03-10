@@ -278,8 +278,8 @@ export default function StudentChatPage() {
 
           <div className="flex items-center gap-2 shrink-0">
             {!started ? (
-              <span className="text-xs font-medium px-2.5 py-1 rounded-full border"
-                style={{ backgroundColor: "#eff6ff", borderColor: "#bfdbfe", color: "#1d4ed8" }}>
+              <span className="text-xs font-medium px-2.5 py-1 rounded-full border-2 border-[#010001]"
+                style={{ backgroundColor: "#eff6ff", color: "#1d4ed8" }}>
                 For Students
               </span>
             ) : (
@@ -303,7 +303,7 @@ export default function StudentChatPage() {
           {!started && (
             <div className="py-6">
               {/* Hero card */}
-              <div className="rounded-2xl overflow-hidden border border-blue-100 shadow-sm mb-5"
+              <div className="rounded-2xl overflow-hidden border-2 border-[#010001] shadow-[4px_4px_0px_0px_#010001] mb-5"
                 style={{ background: "linear-gradient(135deg, #eff6ff 0%, #f0f9ff 50%, #fffbf7 100%)" }}>
                 <div className="px-6 pt-6 pb-5">
                   {/* Teacher session badge */}
@@ -329,30 +329,27 @@ export default function StudentChatPage() {
               {/* Grade selection */}
               <div className="mb-4">
                 <p className="text-xs font-bold text-stone-500 uppercase tracking-widest mb-3">
-                  What grade are you in?
+                  Hangi Sınıftasın?
                 </p>
-                <div className="grid grid-cols-3 gap-2">
+                <div className="grid grid-cols-3 gap-3">
                   {gradeLevels.map((g) => {
                     const isSelected = selectedGrade === g.value && !customGrade;
                     return (
                       <button key={g.value} type="button"
                         onClick={() => { setSelectedGrade(g.value); setCustomGrade(""); }}
-                        className="flex flex-col items-center gap-2 px-3 py-4 rounded-2xl border-2 transition-all duration-200 text-center"
+                        className={`flex flex-col items-center gap-2 px-3 py-5 rounded-2xl border-2 border-[#010001] transition-all duration-200 text-center ${isSelected ? "grade-card-selected" : ""}`}
                         style={{
-                          borderColor: isSelected ? g.color : "#e7e5e4",
-                          backgroundColor: isSelected ? g.bg : "#fff",
-                          boxShadow: isSelected ? `0 0 0 3px ${g.color}22, 0 4px 12px ${g.color}18` : "0 1px 3px rgba(0,0,0,0.04)",
-                          transform: isSelected ? "translateY(-2px)" : "none",
+                          backgroundColor: isSelected ? g.color : "#fff",
+                          color: isSelected ? "#fff" : "#010001",
+                          boxShadow: isSelected ? "none" : "4px 4px 0px 0px #010001",
+                          transform: isSelected ? "translate(1px, 1px)" : "",
                         }}>
-                        <div className="w-10 h-10 rounded-full flex items-center justify-center text-2xl"
-                          style={{ backgroundColor: isSelected ? `${g.color}20` : "#f5f5f4" }}>
-                          {g.emoji}
-                        </div>
-                        <span className="font-bold text-xs leading-tight"
-                          style={{ fontFamily: "var(--font-display)", color: isSelected ? g.color : "#1c1917" }}>
+                        <span className="text-4xl leading-none">{g.emoji}</span>
+                        <span className="font-bold text-lg leading-tight"
+                          style={{ fontFamily: "var(--font-display)" }}>
                           {g.label}
                         </span>
-                        <span className="text-[10px] text-stone-400">{g.sub}</span>
+                        <span className="text-sm" style={{ opacity: 0.7 }}>{g.sub}</span>
                       </button>
                     );
                   })}
@@ -389,16 +386,8 @@ export default function StudentChatPage() {
               {/* Start button — primary dominant */}
               <button type="button" disabled={!activeGrade}
                 onClick={() => startSession(activeGrade, topic)}
-                className="w-full py-4 px-6 rounded-2xl text-base font-bold text-white transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2 mb-3"
-                style={{
-                  backgroundColor: activeGrade ? "#3b82f6" : "#93c5fd",
-                  boxShadow: activeGrade ? "0 6px 22px 0 rgba(59,130,246,0.35)" : "none",
-                  transform: activeGrade ? "none" : "none",
-                }}>
-                Start Learning
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
-                </svg>
+                className="w-full py-4 px-6 rounded-2xl text-base font-bold text-white transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2 mb-3 bg-[#BC5F04] border-2 border-[#010001] shadow-[4px_4px_0px_0px_#010001] hover:shadow-none hover:translate-x-1 hover:translate-y-1">
+                Maceraya Dal 🚀
               </button>
 
               {/* Try Example — inline chip style */}
@@ -417,8 +406,8 @@ export default function StudentChatPage() {
               </div>
 
               {/* Pro Tip box */}
-              <div className="flex items-start gap-3 rounded-xl px-4 py-3 mt-2"
-                style={{ backgroundColor: "#eff6ff", border: "1px solid #bfdbfe" }}>
+              <div className="flex items-start gap-3 rounded-xl px-4 py-3 mt-2 border-2 border-[#010001] shadow-[2px_2px_0px_0px_#010001]"
+                style={{ backgroundColor: "#FAFAF7" }}>
                 <div className="w-7 h-7 rounded-full shrink-0 flex items-center justify-center text-sm mt-0.5"
                   style={{ backgroundColor: "#dbeafe" }}>
                   🤖
@@ -448,8 +437,8 @@ export default function StudentChatPage() {
                     {msg.role === "assistant" && msg.mode && <ModeBadge mode={msg.mode} />}
                     <div className="px-4 py-3"
                       style={msg.role === "user"
-                        ? { backgroundColor: gradeConfig.color, color: "#fff", borderRadius: "24px 24px 8px 24px" }
-                        : { backgroundColor: "#fff", border: "1px solid #e2e8f0", borderRadius: "24px 24px 24px 8px", color: "#010001" }}>
+                        ? { backgroundColor: "#BC5F04", color: "#fff", borderRadius: "20px 4px 20px 20px" }
+                        : { backgroundColor: "#FAFAF7", border: "2px solid #010001", borderRadius: "4px 20px 20px 20px", color: "#010001" }}>
                       {msg.role === "user"
                         ? <p className="text-sm leading-relaxed">{msg.content}</p>
                         : <MessageText text={msg.displayContent ?? msg.content} />}
@@ -474,23 +463,32 @@ export default function StudentChatPage() {
 
       {/* ── Input bar (only when started) ── */}
       {started && (
-        <div className="shrink-0 border-t px-4 py-3" style={{ backgroundColor: "#fff", borderColor: "#e2e8f0" }}>
+        <div className="shrink-0 border-t px-4 py-4" style={{ backgroundColor: "#FAFAF7", borderColor: "#e2e8f0" }}>
           <div className="max-w-3xl mx-auto w-full">
-            {messages.length <= 1 && (
+            {messages.length > 0 && (
               <div className="flex gap-2 mb-2.5 flex-wrap">
-                {["Explain this topic", "Quiz me!", "Give me an example"].map((q) => (
-                  <button key={q} onClick={() => setInput(q)}
-                    className="text-xs px-3 py-1.5 rounded-full border transition-all"
-                    style={{ borderColor: gradeConfig.border, backgroundColor: gradeConfig.bg, color: gradeConfig.color }}>
-                    {q}
-                  </button>
-                ))}
+                {messages.length <= 1
+                  ? ["Explain this topic", "Quiz me!", "Give me an example"].map((q) => (
+                      <button key={q} onClick={() => setInput(q)}
+                        className="text-xs px-3 py-1.5 rounded-full border-2 border-[#010001] shadow-[2px_2px_0px_0px_#010001] hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 transition-all"
+                        style={{ backgroundColor: gradeConfig.bg, color: gradeConfig.color }}>
+                        {q}
+                      </button>
+                    ))
+                  : (
+                    <button onClick={() => { setInput("Quiz me!"); }}
+                      className="text-xs px-3 py-1.5 rounded-full border-2 border-[#010001] shadow-[2px_2px_0px_0px_#010001] hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 transition-all"
+                      style={{ backgroundColor: gradeConfig.bg, color: gradeConfig.color }}>
+                      Beni Test Et 🧠
+                    </button>
+                  )
+                }
               </div>
             )}
-            <div className="flex items-end gap-2">
+            <div className="flex items-end gap-2 rounded-2xl border-2 border-[#010001] shadow-[4px_4px_0px_0px_#010001] bg-white px-3 py-2">
               <textarea ref={inputRef} rows={1}
-                className="flex-1 resize-none rounded-2xl border px-4 py-3 text-sm text-stone-800 placeholder:text-stone-400 focus:outline-none focus:ring-2 transition-all leading-snug"
-                style={{ borderColor: "#e2e8f0", maxHeight: "120px", "--tw-ring-color": gradeConfig.color } as React.CSSProperties}
+                className="flex-1 resize-none px-1 py-1 text-sm text-stone-800 placeholder:text-stone-400 focus:outline-none transition-all leading-snug bg-transparent"
+                style={{ maxHeight: "120px" }}
                 placeholder="Ask a question…"
                 value={input}
                 onChange={(e) => {
@@ -502,7 +500,7 @@ export default function StudentChatPage() {
                 disabled={loading}
               />
               <button onClick={sendMessage} disabled={!input.trim() || loading}
-                className="shrink-0 w-11 h-11 rounded-2xl flex items-center justify-center transition-all duration-200 disabled:opacity-40"
+                className="shrink-0 w-10 h-10 rounded-xl border-2 border-[#010001] shadow-[2px_2px_0px_0px_#010001] hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 flex items-center justify-center transition-all duration-200 disabled:opacity-40"
                 style={{ backgroundColor: input.trim() && !loading ? gradeConfig.color : "#cbd5e1" }}>
                 <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M6 12 3.269 3.125A59.769 59.769 0 0 1 21.485 12 59.768 59.768 0 0 1 3.27 20.875L5.999 12Zm0 0h7.5" />

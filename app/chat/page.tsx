@@ -90,7 +90,7 @@ function MarkdownContent({ text }: { text: string }) {
         </p>
       );
     } else if (/^---+$/.test(line.trim())) {
-      nodes.push(<hr key={i} className="my-3 border-stone-200" />);
+      nodes.push(<hr key={i} className="my-3" style={{ border: "none", borderTop: "2px dotted #d6d3d1" }} />);
     } else if (isBullet) {
       listBuffer.push(line.slice(2));
     } else if (!line.trim()) {
@@ -105,7 +105,7 @@ function MarkdownContent({ text }: { text: string }) {
   });
   if (listBuffer.length > 0) flushList("end");
 
-  return <div className="space-y-0.5">{nodes}</div>;
+  return <div className="space-y-0.5 markdown-body">{nodes}</div>;
 }
 
 // ── Sub-components ─────────────────────────────────────────────────────────────
@@ -131,8 +131,8 @@ function TypingIndicator() {
 function IntentBadge({ intent }: { intent: Intent }) {
   const cfg = INTENT_CONFIG[intent];
   return (
-    <span className="inline-flex items-center gap-1.5 text-xs font-bold px-2.5 py-1 rounded-full"
-      style={{ backgroundColor: cfg.bg, color: cfg.color, border: `1px solid ${cfg.border}` }}>
+    <span className="inline-flex items-center gap-1.5 text-xs font-bold px-2.5 py-1 rounded-full border-2 border-[#010001] shadow-[2px_2px_0px_0px_#010001]"
+      style={{ backgroundColor: cfg.bg, color: cfg.color }}>
       <span>{cfg.emoji}</span>
       {cfg.label}
     </span>
@@ -190,8 +190,8 @@ function WelcomeScreen({ onSend }: { onSend: (text: string) => void }) {
       <div className="flex flex-col gap-2 w-full">
         {chips.map((c) => (
           <button key={c.label} onClick={() => onSend(c.text)}
-            className="text-left px-4 py-3 rounded-xl border text-sm font-medium transition-all hover:border-orange-300 hover:bg-orange-50 hover:text-orange-800"
-            style={{ borderColor: "#e7e5e4", color: "#78716c", backgroundColor: "#fafaf9" }}>
+            className="text-left px-4 py-3 rounded-xl border-2 border-[#010001] shadow-[2px_2px_0px_0px_#010001] hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 text-sm font-medium transition-all"
+            style={{ color: "#78716c", backgroundColor: "#fafaf9" }}>
             {c.label}
           </button>
         ))}
@@ -269,7 +269,7 @@ export default function ChatPage() {
     <div className="flex flex-col" style={{ height: "100dvh", backgroundColor: "#FAFAF7" }}>
 
       {/* ── Header ── */}
-      <header className="shrink-0 border-b z-10"
+      <header className="shrink-0 border-b z-10 transition-all duration-500"
         style={{ backgroundColor: "rgba(255,251,247,0.97)", borderColor: cfg.border }}>
         <div className="px-4 h-14 flex items-center justify-between gap-3 max-w-2xl mx-auto w-full">
           <div className="flex items-center gap-2.5 min-w-0">
@@ -337,8 +337,8 @@ export default function ChatPage() {
 
                     <div className="px-4 py-3"
                       style={msg.role === "user"
-                        ? { backgroundColor: cfg.color, color: "#fff", borderRadius: "24px 24px 8px 24px" }
-                        : { backgroundColor: "#fff", border: "1px solid #e2e8f0", borderRadius: "24px 24px 24px 8px", color: "#010001" }}>
+                        ? { backgroundColor: cfg.color, color: "#fff", borderRadius: "20px 4px 20px 20px" }
+                        : { backgroundColor: "#FAFAF7", border: "2px solid #010001", borderRadius: "4px 20px 20px 20px", color: "#010001" }}>
                       {msg.role === "user"
                         ? <p className="text-sm leading-relaxed whitespace-pre-wrap">{msg.content}</p>
                         : <MarkdownContent text={msg.displayContent ?? msg.content} />}
@@ -375,11 +375,11 @@ export default function ChatPage() {
       </div>
 
       {/* ── Input bar ── */}
-      <div className="shrink-0 border-t px-4 py-3" style={{ backgroundColor: "#fff", borderColor: "#e2e8f0" }}>
+      <div className="shrink-0 border-t px-4 py-3" style={{ backgroundColor: "#FAFAF7", borderColor: "#e2e8f0" }}>
         <div className="max-w-2xl mx-auto w-full">
           <div className="flex items-end gap-2">
             <textarea ref={inputRef} rows={1}
-              className="flex-1 resize-none rounded-2xl border px-4 py-3 text-sm text-stone-800 placeholder:text-stone-400 focus:outline-none focus:ring-2 transition-all leading-snug"
+              className="flex-1 resize-none rounded-3xl border px-4 py-3 text-sm text-stone-800 placeholder:text-stone-400 focus:outline-none focus:ring-2 transition-all leading-snug"
               style={{ borderColor: "#e2e8f0", maxHeight: "180px", "--tw-ring-color": cfg.color } as React.CSSProperties}
               placeholder="Lesson plan, essay grading, topic question…"
               value={input}
@@ -392,7 +392,7 @@ export default function ChatPage() {
               disabled={loading}
             />
             <button onClick={() => sendMessage()} disabled={!input.trim() || loading}
-              className="shrink-0 w-11 h-11 rounded-2xl flex items-center justify-center transition-all duration-200 disabled:opacity-40"
+              className="shrink-0 w-11 h-11 rounded-2xl border-2 border-[#010001] shadow-[2px_2px_0px_0px_#010001] hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 flex items-center justify-center transition-all duration-200 disabled:opacity-40"
               style={{ backgroundColor: input.trim() && !loading ? cfg.color : "#cbd5e1" }}>
               <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M6 12 3.269 3.125A59.769 59.769 0 0 1 21.485 12 59.768 59.768 0 0 1 3.27 20.875L5.999 12Zm0 0h7.5" />

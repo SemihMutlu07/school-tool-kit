@@ -392,8 +392,7 @@ export default function ChatPage() {
               disabled={loading}
             />
             <button onClick={() => sendMessage()} disabled={!input.trim() || loading}
-              className="shrink-0 w-11 h-11 rounded-2xl border-2 border-[#010001] shadow-[2px_2px_0px_0px_#010001] hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 flex items-center justify-center transition-all duration-200 disabled:opacity-40"
-              style={{ backgroundColor: input.trim() && !loading ? cfg.color : "#cbd5e1" }}>
+              className="shrink-0 w-11 h-11 rounded-2xl border-2 border-[#010001] shadow-[2px_2px_0px_0px_#010001] hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 flex items-center justify-center transition-all duration-200 disabled:opacity-40 bg-[#BC5F04] hover:bg-[#874000] text-white">
               <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M6 12 3.269 3.125A59.769 59.769 0 0 1 21.485 12 59.768 59.768 0 0 1 3.27 20.875L5.999 12Zm0 0h7.5" />
               </svg>

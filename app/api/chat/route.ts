@@ -87,7 +87,7 @@ BEHAVIOR RULES:
 4. Safety: only educational topics. Never ask for personal information.
 5. Respond in the same language the user writes (Turkish or English).`,
 
-  general: `You are the Madlen AI Toolkit assistant — an all-in-one educational platform for teachers and students.
+  general: `You are an AI Toolkit assistant — an all-in-one educational platform for teachers and students.
 
 Your three capabilities:
 - 📋 **Lesson Plans** — Create detailed K-12 lesson plans for any topic and grade level
@@ -128,7 +128,7 @@ function detectIntent(message: string, lastIntent: Intent | null): Intent {
     /\b(explain|what\s+is|what\s+are|how\s+does|how\s+do|teach\s+me|help\s+me\s+(understand|learn)|i\s+don.t\s+understand|practice|quiz\s+me)\b/.test(m)
   ) return "student_chat";
 
-  // Context carry-over: if continuation signals present, keep last non-general intent
+  // Context carry-over: keep last non-general intent on continuation signals
   if (lastIntent && lastIntent !== "general") {
     if (/\b(bunu|bunun|this|it|same|aynı|şimdi|now|also|ayrıca|devam|continue|more|daha|extend|modify|değiştir|change|add|ekle|başka|another)\b/.test(m)) {
       return lastIntent;
@@ -139,6 +139,9 @@ function detectIntent(message: string, lastIntent: Intent | null): Intent {
 }
 
 // ── Route handler ──────────────────────────────────────────────────────────────
+
+const MAX_MESSAGE_LENGTH = 500;
+const MAX_HISTORY_MESSAGES = 20;
 
 export async function POST(req: Request) {
   if (!process.env.ANTHROPIC_API_KEY) {
@@ -153,10 +156,26 @@ export async function POST(req: Request) {
       return Response.json({ error: "Message is required." }, { status: 400 });
     }
 
+    if (newMessage.trim().length > MAX_MESSAGE_LENGTH) {
+      return Response.json(
+        { error: `Message must be ${MAX_MESSAGE_LENGTH} characters or fewer.` },
+        { status: 400 }
+      );
+    }
+
     const intent = detectIntent(newMessage.trim(), lastIntent ?? null);
     const systemPrompt = SYSTEM_PROMPTS[intent];
 
-    const history: Message[] = Array.isArray(messages) ? messages : [];
+    const history: Message[] = (Array.isArray(messages) ? messages : [])
+      .filter(
+        (m): m is Message =>
+          m &&
+          typeof m === "object" &&
+          (m.role === "user" || m.role === "assistant") &&
+          typeof m.content === "string"
+      )
+      .slice(-MAX_HISTORY_MESSAGES);
+
     const allMessages: Message[] = [
       ...history,
       { role: "user", content: newMessage.trim() },
@@ -171,12 +190,14 @@ export async function POST(req: Request) {
       messages: allMessages,
     });
 
-    const text = response.content[0].type === "text" ? response.content[0].text : "";
+    if (!response.content.length || response.content[0].type !== "text") {
+      return Response.json({ error: "No response from AI. Please try again." }, { status: 500 });
+    }
 
-    return Response.json({ reply: text, intent });
+    return Response.json({ reply: response.content[0].text, intent });
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     console.error("chat API error:", message);
-    return Response.json({ error: message }, { status: 500 });
+    return Response.json({ error: "Something went wrong. Please try again." }, { status: 500 });
   }
 }

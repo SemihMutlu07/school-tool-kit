@@ -42,6 +42,8 @@ Rules:
 - Feedback must be specific to THIS essay, not generic
 - shareableSummary should be warm, honest, and student-facing`;
 
+const MAX_ESSAY_LENGTH = 5000;
+
 export async function POST(req: Request) {
   if (!process.env.ANTHROPIC_API_KEY) {
     return Response.json({ error: "ANTHROPIC_API_KEY is not set on the server." }, { status: 500 });
@@ -64,6 +66,13 @@ export async function POST(req: Request) {
       );
     }
 
+    if (essayText.trim().length > MAX_ESSAY_LENGTH) {
+      return Response.json(
+        { error: `Essay must be ${MAX_ESSAY_LENGTH} characters or fewer.` },
+        { status: 400 }
+      );
+    }
+
     const userPrompt = `Grade level: ${gradeLevel}\n\nEssay to grade:\n\n${essayText.trim()}`;
 
     const message = await client.messages.create({
@@ -73,17 +82,25 @@ export async function POST(req: Request) {
       messages: [{ role: "user", content: userPrompt }],
     });
 
-    const raw = message.content[0].type === "text" ? message.content[0].text : "";
+    if (!message.content.length || message.content[0].type !== "text") {
+      return Response.json({ error: "No response from AI. Please try again." }, { status: 500 });
+    }
 
+    const raw = message.content[0].text;
     const cleaned = raw
       .replace(/^```(?:json)?\n?/i, "")
       .replace(/\n?```$/i, "")
       .trim();
 
-    const result = JSON.parse(cleaned);
+    let result;
+    try {
+      result = JSON.parse(cleaned);
+    } catch {
+      return Response.json({ error: "Failed to parse AI response. Please try again." }, { status: 500 });
+    }
 
-    // Ensure totalScore is correct
-    if (result.criteria?.length === 4) {
+    // Recompute totalScore server-side to ensure correctness
+    if (Array.isArray(result.criteria) && result.criteria.length === 4) {
       result.totalScore = result.criteria.reduce(
         (sum: number, c: { score: number }) => sum + c.score,
         0
@@ -94,6 +111,6 @@ export async function POST(req: Request) {
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     console.error("essay-grader API error:", message);
-    return Response.json({ error: message }, { status: 500 });
+    return Response.json({ error: "Something went wrong. Please try again." }, { status: 500 });
   }
 }

@@ -43,6 +43,10 @@ Remember: The [MODE: explanation] or [MODE: hint] tag MUST be the first thing in
 
 type Message = { role: "user" | "assistant"; content: string };
 
+const MAX_MESSAGE_LENGTH = 500;
+const MAX_TOPIC_LENGTH = 200;
+const MAX_HISTORY_MESSAGES = 20;
+
 export async function POST(req: Request) {
   if (!process.env.ANTHROPIC_API_KEY) {
     return Response.json({ error: "ANTHROPIC_API_KEY is not set on the server." }, { status: 500 });
@@ -58,13 +62,36 @@ export async function POST(req: Request) {
       );
     }
 
+    if (newMessage.trim().length > MAX_MESSAGE_LENGTH) {
+      return Response.json(
+        { error: `Message must be ${MAX_MESSAGE_LENGTH} characters or fewer.` },
+        { status: 400 }
+      );
+    }
+
+    if (topic?.trim() && topic.trim().length > MAX_TOPIC_LENGTH) {
+      return Response.json(
+        { error: `Topic must be ${MAX_TOPIC_LENGTH} characters or fewer.` },
+        { status: 400 }
+      );
+    }
+
     const topicLine = topic?.trim()
       ? `The student has chosen to focus on: ${topic.trim()}.`
       : "No specific topic set — answer general questions across subjects.";
 
     const systemWithContext = `${SYSTEM_PROMPT}\n\nStudent grade level: ${gradeLevel}\n${topicLine}`;
 
-    const history: Message[] = Array.isArray(messages) ? messages : [];
+    const history: Message[] = (Array.isArray(messages) ? messages : [])
+      .filter(
+        (m): m is Message =>
+          m &&
+          typeof m === "object" &&
+          (m.role === "user" || m.role === "assistant") &&
+          typeof m.content === "string"
+      )
+      .slice(-MAX_HISTORY_MESSAGES);
+
     const allMessages: Message[] = [
       ...history,
       { role: "user", content: newMessage.trim() },
@@ -77,12 +104,14 @@ export async function POST(req: Request) {
       messages: allMessages,
     });
 
-    const text = response.content[0].type === "text" ? response.content[0].text : "";
+    if (!response.content.length || response.content[0].type !== "text") {
+      return Response.json({ error: "No response from AI. Please try again." }, { status: 500 });
+    }
 
-    return Response.json({ reply: text });
+    return Response.json({ reply: response.content[0].text });
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     console.error("student-chat API error:", message);
-    return Response.json({ error: message }, { status: 500 });
+    return Response.json({ error: "Something went wrong. Please try again." }, { status: 500 });
   }
 }

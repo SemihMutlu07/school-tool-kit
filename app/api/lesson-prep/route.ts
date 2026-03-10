@@ -35,6 +35,9 @@ Rules:
 - Keep language appropriate for the specified grade level
 - Be specific and practical — avoid vague generalities`;
 
+const MAX_TOPIC_LENGTH = 500;
+const MAX_NOTES_LENGTH = 500;
+
 export async function POST(req: Request) {
   if (!process.env.ANTHROPIC_API_KEY) {
     return Response.json({ error: "ANTHROPIC_API_KEY is not set on the server." }, { status: 500 });
@@ -46,6 +49,20 @@ export async function POST(req: Request) {
     if (!topic?.trim() || !gradeLevel) {
       return Response.json(
         { error: "Topic and grade level are required." },
+        { status: 400 }
+      );
+    }
+
+    if (topic.trim().length > MAX_TOPIC_LENGTH) {
+      return Response.json(
+        { error: `Topic must be ${MAX_TOPIC_LENGTH} characters or fewer.` },
+        { status: 400 }
+      );
+    }
+
+    if (notes?.trim() && notes.trim().length > MAX_NOTES_LENGTH) {
+      return Response.json(
+        { error: `Notes must be ${MAX_NOTES_LENGTH} characters or fewer.` },
         { status: 400 }
       );
     }
@@ -74,19 +91,27 @@ export async function POST(req: Request) {
       messages: [{ role: "user", content: userPrompt }],
     });
 
-    const raw = message.content[0].type === "text" ? message.content[0].text : "";
+    if (!message.content.length || message.content[0].type !== "text") {
+      return Response.json({ error: "No response from AI. Please try again." }, { status: 500 });
+    }
 
-    // Strip any accidental markdown code fences
+    const raw = message.content[0].text;
     const cleaned = raw
       .replace(/^```(?:json)?\n?/i, "")
       .replace(/\n?```$/i, "")
       .trim();
 
-    const result = JSON.parse(cleaned);
+    let result;
+    try {
+      result = JSON.parse(cleaned);
+    } catch {
+      return Response.json({ error: "Failed to parse AI response. Please try again." }, { status: 500 });
+    }
+
     return Response.json({ result });
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     console.error("lesson-prep API error:", message);
-    return Response.json({ error: message }, { status: 500 });
+    return Response.json({ error: "Something went wrong. Please try again." }, { status: 500 });
   }
 }

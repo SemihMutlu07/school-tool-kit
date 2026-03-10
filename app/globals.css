@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 :root {
-  --background: #fffbf7;
-  --foreground: #1c1917;
+  --background: #FAFAF7;
+  --foreground: #010001;
   --font-display: "Plus Jakarta Sans", system-ui, sans-serif;
   --font-body: "Inter", system-ui, sans-serif;
 }

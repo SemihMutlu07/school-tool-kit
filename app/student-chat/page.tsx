@@ -2,6 +2,8 @@
 
 import { useState, useRef, useEffect, useCallback } from "react";
 import Link from "next/link";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 
@@ -27,9 +29,9 @@ function parseMode(raw: string): { mode: Mode; content: string } {
 }
 
 const gradeLevels = [
-  { value: "Elementary (Grades 3–5)",   label: "Elementary",   sub: "Grades 3–5",  emoji: "🌱", color: "#f97316", bg: "#fff7ed", border: "#fdba74" },
+  { value: "Elementary (Grades 3–5)",   label: "Elementary",   sub: "Grades 3–5",  emoji: "🌱", color: "#BC5F04", bg: "#FDF0E3", border: "#E8B87A" },
   { value: "Middle School (Grades 6–8)", label: "Middle School", sub: "Grades 6–8",  emoji: "📚", color: "#3b82f6", bg: "#eff6ff", border: "#bfdbfe" },
-  { value: "High School (Grades 9–12)",  label: "High School",  sub: "Grades 9–12", emoji: "🎓", color: "#8b5cf6", bg: "#f5f3ff", border: "#ddd6fe" },
+  { value: "High School (Grades 9–12)",  label: "High School",  sub: "Grades 9–12", emoji: "🎓", color: "#F4442E", bg: "#FEE8E5", border: "#FAB0A6" },
 ];
 
 function getGradeConfig(gradeLevel: string) {
@@ -74,22 +76,29 @@ function ModeBadge({ mode }: { mode: Mode }) {
 
 function MessageText({ text }: { text: string }) {
   return (
-    <div className="text-sm leading-relaxed space-y-1.5">
-      {text.split("\n").map((line, i) => {
-        if (!line.trim()) return <div key={i} className="h-1" />;
-        const parts = line.split(/(\*\*[^*]+\*\*|\*[^*]+\*)/g).map((p, j) => {
-          if (p.startsWith("**") && p.endsWith("**")) return <strong key={j}>{p.slice(2, -2)}</strong>;
-          if (p.startsWith("*") && p.endsWith("*")) return <em key={j}>{p.slice(1, -1)}</em>;
-          return <span key={j}>{p}</span>;
-        });
-        if (line.match(/^[-•]\s/)) return (
-          <div key={i} className="flex items-start gap-2">
-            <span className="mt-1.5 w-1.5 h-1.5 rounded-full shrink-0" style={{ backgroundColor: "#60a5fa" }} />
-            <span>{parts}</span>
-          </div>
-        );
-        return <p key={i}>{parts}</p>;
-      })}
+    <div className="text-sm leading-relaxed">
+      <ReactMarkdown
+        remarkPlugins={[remarkGfm]}
+        components={{
+          h2: ({ children }) => <h3 className="font-bold text-stone-800 text-sm mt-3 mb-1" style={{ fontFamily: "var(--font-display)" }}>{children}</h3>,
+          h3: ({ children }) => <h4 className="font-semibold text-stone-700 text-sm mt-2 mb-0.5">{children}</h4>,
+          p: ({ children }) => <p className="mb-1.5 leading-relaxed">{children}</p>,
+          ul: ({ children }) => <ul className="list-disc pl-4 space-y-0.5 mb-1.5">{children}</ul>,
+          ol: ({ children }) => <ol className="list-decimal pl-4 space-y-0.5 mb-1.5">{children}</ol>,
+          hr: () => <hr className="my-3 border-stone-200" />,
+          table: ({ children }) => (
+            <div className="overflow-x-auto my-2">
+              <table className="text-xs border-collapse w-full">{children}</table>
+            </div>
+          ),
+          th: ({ children }) => <th className="border border-stone-200 px-2 py-1 bg-stone-50 font-semibold text-left">{children}</th>,
+          td: ({ children }) => <td className="border border-stone-200 px-2 py-1">{children}</td>,
+          code: ({ children }) => <code className="bg-stone-100 px-1 rounded text-xs font-mono">{children}</code>,
+          strong: ({ children }) => <strong className="font-semibold text-stone-800">{children}</strong>,
+        }}
+      >
+        {text}
+      </ReactMarkdown>
     </div>
   );
 }
@@ -230,12 +239,12 @@ export default function StudentChatPage() {
   };
 
   return (
-    <div className="flex flex-col" style={{ height: "100dvh", backgroundColor: "#fffbf7" }}>
+    <div className="flex flex-col" style={{ height: "100dvh", backgroundColor: "#FAFAF7" }}>
 
       {/* ── Header ── */}
       <header className="shrink-0 border-b z-10"
-        style={{ backgroundColor: "rgba(255,251,247,0.97)", borderColor: started ? gradeConfig.border : "#fed7aa" }}>
-        <div className="px-4 h-14 flex items-center justify-between gap-3 max-w-xl mx-auto w-full">
+        style={{ backgroundColor: "rgba(250,250,247,0.97)", borderColor: started ? gradeConfig.border : "#E8B87A" }}>
+        <div className="px-4 h-14 flex items-center justify-between gap-3 max-w-3xl mx-auto w-full">
           <div className="flex items-center gap-2.5 min-w-0">
             <Link href="/" className="flex items-center gap-1 text-sm font-medium text-stone-500 hover:text-stone-800 transition-colors shrink-0">
               <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
@@ -288,7 +297,7 @@ export default function StudentChatPage() {
 
       {/* ── Scrollable area ── */}
       <div className="flex-1 overflow-y-auto">
-        <div className="max-w-xl mx-auto w-full px-4">
+        <div className="max-w-3xl mx-auto w-full px-4">
 
           {/* ── SETUP (shown when not started) ── */}
           {!started && (
@@ -439,8 +448,8 @@ export default function StudentChatPage() {
                     {msg.role === "assistant" && msg.mode && <ModeBadge mode={msg.mode} />}
                     <div className="px-4 py-3"
                       style={msg.role === "user"
-                        ? { backgroundColor: gradeConfig.color, color: "#fff", borderRadius: "20px 20px 8px 20px" }
-                        : { backgroundColor: "#fff", border: "1px solid #e2e8f0", borderRadius: "20px 20px 20px 8px", color: "#1c1917" }}>
+                        ? { backgroundColor: gradeConfig.color, color: "#fff", borderRadius: "24px 24px 8px 24px" }
+                        : { backgroundColor: "#fff", border: "1px solid #e2e8f0", borderRadius: "24px 24px 24px 8px", color: "#010001" }}>
                       {msg.role === "user"
                         ? <p className="text-sm leading-relaxed">{msg.content}</p>
                         : <MessageText text={msg.displayContent ?? msg.content} />}
@@ -466,7 +475,7 @@ export default function StudentChatPage() {
       {/* ── Input bar (only when started) ── */}
       {started && (
         <div className="shrink-0 border-t px-4 py-3" style={{ backgroundColor: "#fff", borderColor: "#e2e8f0" }}>
-          <div className="max-w-xl mx-auto w-full">
+          <div className="max-w-3xl mx-auto w-full">
             {messages.length <= 1 && (
               <div className="flex gap-2 mb-2.5 flex-wrap">
                 {["Explain this topic", "Quiz me!", "Give me an example"].map((q) => (

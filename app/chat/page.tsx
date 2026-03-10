@@ -19,10 +19,10 @@ type Message = {
 // ── Intent config ──────────────────────────────────────────────────────────────
 
 const INTENT_CONFIG: Record<Intent, { label: string; emoji: string; color: string; bg: string; border: string }> = {
-  lesson_plan:  { label: "Lesson Plan",   emoji: "📋", color: "#f97316", bg: "#fff7ed", border: "#fdba74" },
-  essay_grade:  { label: "Essay Grader",  emoji: "✏️",  color: "#f59e0b", bg: "#fffbeb", border: "#fcd34d" },
+  lesson_plan:  { label: "Lesson Plan",   emoji: "📋", color: "#BC5F04", bg: "#FDF0E3", border: "#E8B87A" },
+  essay_grade:  { label: "Essay Grader",  emoji: "✏️",  color: "#BC5F04", bg: "#FDF0E3", border: "#E8B87A" },
   student_chat: { label: "Study Tutor",   emoji: "💬", color: "#3b82f6", bg: "#eff6ff", border: "#bfdbfe" },
-  general:      { label: "AI Assistant",  emoji: "✨", color: "#8b5cf6", bg: "#f5f3ff", border: "#ddd6fe" },
+  general:      { label: "AI Assistant",  emoji: "✨", color: "#BC5F04", bg: "#FDF0E3", border: "#E8B87A" },
 };
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
@@ -113,7 +113,7 @@ function MarkdownContent({ text }: { text: string }) {
 function TypingIndicator() {
   return (
     <div className="flex items-end gap-2 px-1 py-1">
-      <div className="w-7 h-7 rounded-full shrink-0 flex items-center justify-center text-sm" style={{ backgroundColor: "#f5f3ff" }}>
+      <div className="w-7 h-7 rounded-full shrink-0 flex items-center justify-center text-sm" style={{ backgroundColor: "#FDF0E3" }}>
         ✨
       </div>
       <div className="px-4 py-3 rounded-2xl rounded-bl-sm flex items-center gap-1"
@@ -177,20 +177,20 @@ function WelcomeScreen({ onSend }: { onSend: (text: string) => void }) {
   return (
     <div className="flex flex-col items-center justify-center py-16 px-4 text-center max-w-lg mx-auto">
       <div className="w-16 h-16 rounded-2xl flex items-center justify-center mb-5 text-3xl"
-        style={{ backgroundColor: "#f5f3ff" }}>
+        style={{ backgroundColor: "#FDF0E3" }}>
         ✨
       </div>
       <h2 className="text-xl font-extrabold text-stone-900 mb-2" style={{ fontFamily: "var(--font-display)" }}>
-        Madlen AI
+        AI Toolkit
       </h2>
       <p className="text-sm text-stone-500 leading-relaxed mb-8">
-        Merhaba! Ders planı hazırlamak, ödev değerlendirmek veya bir konuyu öğrenmek için yazabilirsin.
+        Ask anything — lesson plans, essay grading, or help understanding any topic.
       </p>
 
       <div className="flex flex-col gap-2 w-full">
         {chips.map((c) => (
           <button key={c.label} onClick={() => onSend(c.text)}
-            className="text-left px-4 py-3 rounded-xl border text-sm font-medium transition-all hover:border-violet-300 hover:bg-violet-50 hover:text-violet-700"
+            className="text-left px-4 py-3 rounded-xl border text-sm font-medium transition-all hover:border-orange-300 hover:bg-orange-50 hover:text-orange-800"
             style={{ borderColor: "#e7e5e4", color: "#78716c", backgroundColor: "#fafaf9" }}>
             {c.label}
           </button>
@@ -266,7 +266,7 @@ export default function ChatPage() {
   const cfg = INTENT_CONFIG[activeIntent];
 
   return (
-    <div className="flex flex-col" style={{ height: "100dvh", backgroundColor: "#fffbf7" }}>
+    <div className="flex flex-col" style={{ height: "100dvh", backgroundColor: "#FAFAF7" }}>
 
       {/* ── Header ── */}
       <header className="shrink-0 border-b z-10"
@@ -282,7 +282,7 @@ export default function ChatPage() {
             <span className="text-stone-300 hidden sm:inline">/</span>
             <div className="flex items-center gap-2 min-w-0">
               <span className="font-bold text-stone-900 text-sm shrink-0" style={{ fontFamily: "var(--font-display)" }}>
-                Madlen AI
+                AI Toolkit
               </span>
               {messages.length > 0 && (
                 <div className="hidden sm:block">
@@ -324,7 +324,7 @@ export default function ChatPage() {
 
                   {msg.role === "assistant" && (
                     <div className="w-7 h-7 rounded-full shrink-0 flex items-center justify-center text-sm mb-0.5"
-                      style={{ backgroundColor: msg.intent ? INTENT_CONFIG[msg.intent].bg : "#f5f3ff" }}>
+                      style={{ backgroundColor: msg.intent ? INTENT_CONFIG[msg.intent].bg : "#FDF0E3" }}>
                       {msg.intent ? INTENT_CONFIG[msg.intent].emoji : "✨"}
                     </div>
                   )}
@@ -337,8 +337,8 @@ export default function ChatPage() {
 
                     <div className="px-4 py-3"
                       style={msg.role === "user"
-                        ? { backgroundColor: cfg.color, color: "#fff", borderRadius: "18px 18px 4px 18px" }
-                        : { backgroundColor: "#fff", border: "1px solid #e2e8f0", borderRadius: "18px 18px 18px 4px", color: "#1c1917" }}>
+                        ? { backgroundColor: cfg.color, color: "#fff", borderRadius: "24px 24px 8px 24px" }
+                        : { backgroundColor: "#fff", border: "1px solid #e2e8f0", borderRadius: "24px 24px 24px 8px", color: "#010001" }}>
                       {msg.role === "user"
                         ? <p className="text-sm leading-relaxed whitespace-pre-wrap">{msg.content}</p>
                         : <MarkdownContent text={msg.displayContent ?? msg.content} />}
@@ -381,7 +381,7 @@ export default function ChatPage() {
             <textarea ref={inputRef} rows={1}
               className="flex-1 resize-none rounded-2xl border px-4 py-3 text-sm text-stone-800 placeholder:text-stone-400 focus:outline-none focus:ring-2 transition-all leading-snug"
               style={{ borderColor: "#e2e8f0", maxHeight: "180px", "--tw-ring-color": cfg.color } as React.CSSProperties}
-              placeholder="Ders planı, ödev değerlendirmesi, konu sorusu…"
+              placeholder="Lesson plan, essay grading, topic question…"
               value={input}
               onChange={(e) => {
                 setInput(e.target.value);

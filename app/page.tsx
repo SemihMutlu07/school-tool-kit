@@ -83,14 +83,15 @@ const tools = [
       "Timed lesson outline",
       "Discussion questions & assessment",
     ],
-    iconBg: "bg-amber-100",
-    iconColor: "text-amber-600",
-    topBorderColor: "#f59e0b",
+    iconBg: "bg-orange-100",
+    iconColor: "text-orange-800",
+    topBorderColor: "#BC5F04",
     tagStyle:
-      "bg-amber-50 text-amber-700 border border-amber-200",
+      "bg-orange-50 text-orange-800 border border-orange-200",
     btnStyle:
-      "bg-orange-500 hover:bg-orange-600 text-white shadow-orange-200 shadow-md hover:shadow-orange-300",
-    cardGlow: "hover:shadow-amber-100",
+      "text-white shadow-md",
+    btnInlineStyle: { backgroundColor: "#BC5F04", boxShadow: "0 4px 12px rgba(188,95,4,0.3)" },
+    cardGlow: "hover:shadow-orange-100",
   },
   {
     href: "/essay-grader",
@@ -111,6 +112,7 @@ const tools = [
       "bg-emerald-50 text-emerald-700 border border-emerald-200",
     btnStyle:
       "bg-emerald-500 hover:bg-emerald-600 text-white shadow-emerald-200 shadow-md hover:shadow-emerald-300",
+    btnInlineStyle: {},
     cardGlow: "hover:shadow-emerald-100",
   },
   {
@@ -132,6 +134,7 @@ const tools = [
       "bg-blue-50 text-blue-700 border border-blue-200",
     btnStyle:
       "bg-blue-500 hover:bg-blue-600 text-white shadow-blue-200 shadow-md hover:shadow-blue-300",
+    btnInlineStyle: {},
     cardGlow: "hover:shadow-blue-100",
   },
 ];
@@ -140,14 +143,14 @@ export default function Home() {
   return (
     <div
       className="min-h-screen"
-      style={{ backgroundColor: "#fffbf7", color: "#1c1917" }}
+      style={{ backgroundColor: "#FAFAF7", color: "#010001" }}
     >
       {/* ── Header ─────────────────────────────────────── */}
       <header
         className="sticky top-0 z-50 backdrop-blur-sm border-b"
         style={{
-          backgroundColor: "rgba(255, 251, 247, 0.92)",
-          borderColor: "#fed7aa",
+          backgroundColor: "rgba(250, 250, 247, 0.92)",
+          borderColor: "#E8B87A",
         }}
       >
         <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
@@ -157,7 +160,7 @@ export default function Home() {
               className="text-lg font-bold tracking-tight text-stone-900"
               style={{ fontFamily: "var(--font-display)" }}
             >
-              Madlen AI Toolkit
+              AI Toolkit
             </span>
           </div>
           <div className="flex items-center gap-2 text-xs text-stone-400 font-medium">
@@ -174,7 +177,7 @@ export default function Home() {
           className="absolute inset-0"
           style={{
             background:
-              "linear-gradient(160deg, #fff7ed 0%, #fef3c7 30%, #fffbf7 70%)",
+              "linear-gradient(160deg, #FDF0E3 0%, #FAE8D5 30%, #FAFAF7 70%)",
           }}
         />
 
@@ -183,7 +186,7 @@ export default function Home() {
           className="absolute top-0 right-0 w-[500px] h-[500px] opacity-[0.07]"
           style={{
             backgroundImage:
-              "radial-gradient(circle, #ea580c 1.5px, transparent 1.5px)",
+              "radial-gradient(circle, #BC5F04 1.5px, transparent 1.5px)",
             backgroundSize: "22px 22px",
           }}
         />
@@ -193,7 +196,7 @@ export default function Home() {
           className="absolute bottom-0 left-0 w-72 h-72 opacity-[0.06]"
           style={{
             backgroundImage:
-              "radial-gradient(circle, #ea580c 1.5px, transparent 1.5px)",
+              "radial-gradient(circle, #BC5F04 1.5px, transparent 1.5px)",
             backgroundSize: "22px 22px",
           }}
         />
@@ -201,16 +204,16 @@ export default function Home() {
         {/* Soft blob */}
         <div
           className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-64 opacity-20 blur-3xl rounded-full"
-          style={{ backgroundColor: "#fed7aa" }}
+          style={{ backgroundColor: "#E8B87A" }}
         />
 
         <div className="relative max-w-4xl mx-auto px-6 py-28 text-center">
           {/* Eyebrow badge */}
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-sm font-medium mb-8 border"
             style={{
-              backgroundColor: "#fff7ed",
-              borderColor: "#fdba74",
-              color: "#c2410c",
+              backgroundColor: "#FDF0E3",
+              borderColor: "#E8B87A",
+              color: "#BC5F04",
             }}
           >
             <span>✨</span>
@@ -220,11 +223,11 @@ export default function Home() {
           {/* Headline */}
           <h1
             className="text-5xl sm:text-6xl font-extrabold leading-[1.1] tracking-tight mb-6"
-            style={{ fontFamily: "var(--font-display)", color: "#1c1917" }}
+            style={{ fontFamily: "var(--font-display)", color: "#010001" }}
           >
             Teaching smarter,
             <br />
-            <span style={{ color: "#ea580c" }}>learning deeper.</span>
+            <span style={{ color: "#BC5F04" }}>learning deeper.</span>
           </h1>
 
           {/* Subheadline */}
@@ -242,19 +245,19 @@ export default function Home() {
             style={{ color: "#a8a29e" }}
           >
             <div className="flex items-center gap-1.5">
-              <span style={{ color: "#1c1917" }} className="font-bold">3</span>
+              <span style={{ color: "#010001" }} className="font-bold">3</span>
               AI-powered tools
             </div>
             <div className="w-1 h-1 rounded-full bg-stone-300" />
             <div className="flex items-center gap-1.5">
               Built for{" "}
-              <span style={{ color: "#1c1917" }} className="font-bold">
+              <span style={{ color: "#010001" }} className="font-bold">
                 K–12
               </span>
             </div>
             <div className="w-1 h-1 rounded-full bg-stone-300" />
             <div className="flex items-center gap-1.5">
-              <span style={{ color: "#1c1917" }} className="font-bold">
+              <span style={{ color: "#010001" }} className="font-bold">
                 Free
               </span>{" "}
               to try
@@ -266,7 +269,7 @@ export default function Home() {
         <div
           className="absolute bottom-0 left-0 right-0 h-24"
           style={{
-            background: "linear-gradient(to bottom, transparent, #fffbf7)",
+            background: "linear-gradient(to bottom, transparent, #FAFAF7)",
           }}
         />
       </section>
@@ -276,23 +279,23 @@ export default function Home() {
         <Link
           href="/chat"
           className="group flex items-center justify-between gap-4 w-full rounded-2xl border px-6 py-4 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg"
-          style={{ backgroundColor: "#f5f3ff", borderColor: "#ddd6fe" }}
+          style={{ backgroundColor: "#FDF0E3", borderColor: "#E8B87A" }}
         >
           <div className="flex items-center gap-3.5 min-w-0">
             <div className="w-10 h-10 rounded-xl flex items-center justify-center text-xl shrink-0"
-              style={{ backgroundColor: "#ede9fe" }}>
+              style={{ backgroundColor: "#F7D9B4" }}>
               ✨
             </div>
             <div className="min-w-0">
-              <p className="text-sm font-bold text-violet-900" style={{ fontFamily: "var(--font-display)" }}>
+              <p className="text-sm font-bold" style={{ fontFamily: "var(--font-display)", color: "#7A3D02" }}>
                 Try the unified experience →
               </p>
-              <p className="text-xs text-violet-500 mt-0.5 truncate">
+              <p className="text-xs mt-0.5 truncate" style={{ color: "#BC5F04" }}>
                 One chat interface — lesson plans, essay grading, tutoring, all in one.
               </p>
             </div>
           </div>
-          <svg className="w-5 h-5 text-violet-400 shrink-0 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
+          <svg className="w-5 h-5 shrink-0 group-hover:translate-x-1 transition-transform" style={{ color: "#BC5F04" }} fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
           </svg>
         </Link>
@@ -304,7 +307,7 @@ export default function Home() {
         <div className="text-center mb-12">
           <p
             className="text-sm font-semibold uppercase tracking-widest"
-            style={{ color: "#f97316" }}
+            style={{ color: "#BC5F04" }}
           >
             Or choose a specific tool
           </p>
@@ -324,6 +327,7 @@ export default function Home() {
               topBorderColor,
               tagStyle,
               btnStyle,
+              btnInlineStyle,
               cardGlow,
             } = tool;
 
@@ -384,6 +388,7 @@ export default function Home() {
                   <Link
                     href={href}
                     className={`flex items-center justify-center gap-2 w-full py-3 px-5 rounded-xl text-sm font-semibold transition-all duration-200 ${btnStyle}`}
+                    style={btnInlineStyle}
                   >
                     Open Tool
                     <svg
@@ -410,10 +415,10 @@ export default function Home() {
       {/* ── Footer ─────────────────────────────────────── */}
       <footer
         className="border-t"
-        style={{ borderColor: "#fed7aa", backgroundColor: "rgba(255,251,247,0.6)" }}
+        style={{ borderColor: "#E8B87A", backgroundColor: "rgba(250,250,247,0.6)" }}
       >
         <div className="max-w-6xl mx-auto px-6 py-8 flex flex-col sm:flex-row items-center justify-between gap-3 text-sm text-stone-400">
-          <span>© 2025 Madlen AI Toolkit · A product case study demo</span>
+          <span>© 2025 AI Toolkit · A product case study demo</span>
           <span className="flex items-center gap-1.5">
             Built with Next.js · Claude AI
           </span>

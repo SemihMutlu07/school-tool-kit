@@ -26,13 +26,13 @@ function BookLoadingAnimation() {
         {/* Book spine */}
         <div
           className="absolute left-1/2 top-0 bottom-0 w-1.5 rounded-sm -translate-x-1/2 z-10"
-          style={{ backgroundColor: "#f97316" }}
+          style={{ backgroundColor: "#BC5F04" }}
         />
         {/* Left cover */}
         <div
           className="absolute left-0 top-0 bottom-0 right-1/2 rounded-l-md"
           style={{
-            backgroundColor: "#fed7aa",
+            backgroundColor: "#F7D9B4",
             borderRight: "1.5px solid #f97316",
             animation: "bookLeft 1.6s ease-in-out infinite",
             transformOrigin: "right center",
@@ -42,7 +42,7 @@ function BookLoadingAnimation() {
         <div
           className="absolute right-0 top-0 bottom-0 left-1/2 rounded-r-md overflow-hidden"
           style={{
-            backgroundColor: "#fff7ed",
+            backgroundColor: "#FDF0E3",
             borderLeft: "1.5px solid #f97316",
             animation: "bookRight 1.6s ease-in-out infinite",
             transformOrigin: "left center",
@@ -200,9 +200,9 @@ function CopyButton({ text }: { text: string }) {
       onClick={handleCopy}
       className="flex items-center gap-1.5 text-sm font-semibold px-4 py-2 rounded-xl transition-all duration-200"
       style={{
-        backgroundColor: copied ? "#10b981" : "#f97316",
+        backgroundColor: copied ? "#10b981" : "#BC5F04",
         color: "#fff",
-        boxShadow: copied ? "0 4px 12px rgba(16,185,129,0.3)" : "0 4px 12px rgba(249,115,22,0.3)",
+        boxShadow: copied ? "0 4px 12px rgba(16,185,129,0.3)" : "0 4px 12px rgba(188,95,4,0.3)",
       }}
     >
       {copied ? (
@@ -268,6 +268,7 @@ export default function LessonPrepPage() {
   const [loading, setLoading] = useState(false);
   const [plan, setPlan] = useState<LessonPlan | null>(null);
   const [error, setError] = useState("");
+  const [showExampleBanner, setShowExampleBanner] = useState(true);
 
   const generatePlan = async (t: string, g: string, d: string, n: string) => {
     setLoading(true);
@@ -308,19 +309,19 @@ export default function LessonPrepPage() {
   };
 
   const inputClass =
-    "w-full rounded-xl border border-stone-200 bg-white px-4 py-3 text-sm text-stone-800 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-orange-300 focus:border-orange-300 transition-all";
+    "w-full rounded-xl border border-stone-200 bg-white px-4 py-3 text-sm text-stone-800 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-amber-300 focus:border-amber-300 transition-all";
   const selectClass =
-    "w-full rounded-xl border border-stone-200 bg-white px-4 py-3 text-sm text-stone-800 focus:outline-none focus:ring-2 focus:ring-orange-300 focus:border-orange-300 transition-all appearance-none cursor-pointer";
+    "w-full rounded-xl border border-stone-200 bg-white px-4 py-3 text-sm text-stone-800 focus:outline-none focus:ring-2 focus:ring-amber-300 focus:border-amber-300 transition-all appearance-none cursor-pointer";
   const labelClass = "block text-sm font-semibold text-stone-700 mb-1.5";
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: "#fffbf7" }}>
+    <div className="min-h-screen" style={{ backgroundColor: "#FAFAF7" }}>
       {/* ── Header ──────────────────────────────────────── */}
       <header
         className="sticky top-0 z-50 backdrop-blur-sm border-b"
         style={{
-          backgroundColor: "rgba(255,251,247,0.92)",
-          borderColor: "#fed7aa",
+          backgroundColor: "rgba(250,250,247,0.92)",
+          borderColor: "#E8B87A",
         }}
       >
         <div className="max-w-5xl mx-auto px-6 h-16 flex items-center justify-between">
@@ -356,16 +357,16 @@ export default function LessonPrepPage() {
                 </span>
               </div>
               <span className="text-[10px] text-stone-400 pl-7 -mt-0.5 font-medium tracking-wide">
-                Madlen AI Toolkit
+                AI Toolkit
               </span>
             </div>
           </div>
           <span
             className="text-xs font-semibold px-2.5 py-1 rounded-full border"
             style={{
-              backgroundColor: "#fff7ed",
-              borderColor: "#fdba74",
-              color: "#c2410c",
+              backgroundColor: "#FDF0E3",
+              borderColor: "#E8B87A",
+              color: "#BC5F04",
             }}
           >
             For Teachers
@@ -374,15 +375,52 @@ export default function LessonPrepPage() {
       </header>
 
       <div className="max-w-5xl mx-auto px-6 py-10">
+        {/* ── Try Example Banner ──────────────────────── */}
+        {showExampleBanner && (
+          <div
+            className="mb-6 rounded-2xl border flex items-center gap-4 px-6 py-4"
+            style={{ backgroundColor: "#FDF0E3", borderColor: "#E8B87A" }}
+          >
+            <div className="flex-1 min-w-0">
+              <p className="font-bold text-sm" style={{ color: "#7A3D02", fontFamily: "var(--font-display)" }}>
+                ✨ Not sure where to start?
+              </p>
+              <p className="text-xs mt-0.5" style={{ color: "#9A6030" }}>
+                Try a pre-filled example — Photosynthesis for High School with visual learning notes.
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() => { tryExample(); setShowExampleBanner(false); }}
+              disabled={loading}
+              className="shrink-0 px-5 py-2.5 rounded-xl text-sm font-bold text-white transition-all disabled:opacity-50"
+              style={{ backgroundColor: "#BC5F04", boxShadow: "0 4px 12px rgba(188,95,4,0.3)" }}
+            >
+              Try Example
+            </button>
+            <button
+              type="button"
+              onClick={() => setShowExampleBanner(false)}
+              className="shrink-0 w-7 h-7 rounded-full flex items-center justify-center transition-all hover:bg-black/10"
+              style={{ color: "#BC5F04" }}
+              aria-label="Dismiss"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+        )}
+
         <div className="grid grid-cols-1 lg:grid-cols-[380px_1fr] gap-8 items-start">
           {/* ── Form ────────────────────────────────────── */}
-          <div className="lg:sticky lg:top-24">
+          <div className="lg:sticky lg:top-8">
             <div className="bg-white rounded-2xl border border-stone-200 shadow-sm overflow-hidden">
               <div
                 className="px-6 py-5 border-b border-stone-100 flex items-start justify-between gap-3"
                 style={{
                   background:
-                    "linear-gradient(135deg, #fff7ed 0%, #fffbf7 100%)",
+                    "linear-gradient(135deg, #FDF0E3 0%, #FAFAF7 100%)",
                 }}
               >
                 <div>
@@ -396,15 +434,6 @@ export default function LessonPrepPage() {
                     Fill in the details below and Claude will do the rest.
                   </p>
                 </div>
-                <button
-                  type="button"
-                  onClick={tryExample}
-                  disabled={loading}
-                  className="shrink-0 flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg border transition-all hover:border-orange-300 hover:bg-orange-50 hover:text-orange-700 disabled:opacity-40"
-                  style={{ borderColor: "#e7e5e4", color: "#78716c" }}
-                >
-                  ✨ Try Example
-                </button>
               </div>
 
               <form onSubmit={handleSubmit} className="px-6 py-6 space-y-5">
@@ -529,9 +558,9 @@ export default function LessonPrepPage() {
                   style={{
                     backgroundColor:
                       loading || !topic.trim() || !gradeLevel
-                        ? "#fdba74"
-                        : "#f97316",
-                    boxShadow: "0 4px 14px 0 rgba(249,115,22,0.25)",
+                        ? "#E8B87A"
+                        : "#BC5F04",
+                    boxShadow: "0 4px 14px 0 rgba(188,95,4,0.25)",
                   }}
                 >
                   {loading ? (
@@ -587,7 +616,7 @@ export default function LessonPrepPage() {
               <div className="flex flex-col items-center justify-center py-24 text-center">
                 <div
                   className="w-20 h-20 rounded-2xl flex items-center justify-center mb-5 text-4xl"
-                  style={{ backgroundColor: "#fff7ed" }}
+                  style={{ backgroundColor: "#FDF0E3" }}
                 >
                   📋
                 </div>
@@ -610,7 +639,7 @@ export default function LessonPrepPage() {
                     <button
                       key={ex.label}
                       onClick={() => { setTopic(ex.topic); setGradeLevel(ex.grade); }}
-                      className="text-xs font-medium px-3 py-1.5 rounded-full border transition-all hover:border-orange-300 hover:bg-orange-50 hover:text-orange-700"
+                      className="text-xs font-medium px-3 py-1.5 rounded-full border transition-all hover:border-orange-300 hover:bg-orange-50 hover:text-orange-800"
                       style={{ borderColor: "#e7e5e4", color: "#78716c", backgroundColor: "#fafaf9" }}
                     >
                       {ex.label}
@@ -655,7 +684,7 @@ export default function LessonPrepPage() {
                 <SectionCard
                   title="Learning Objectives"
                   icon="🎯"
-                  accentColor="#f97316"
+                  accentColor="#BC5F04"
                   copyText={plan.objectives.map((o, i) => `${i + 1}. ${o}`).join("\n")}
                 >
                   <ol className="space-y-2.5">
@@ -663,7 +692,7 @@ export default function LessonPrepPage() {
                       <li key={i} className="flex items-start gap-3 text-sm text-stone-700">
                         <span
                           className="shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold text-white mt-0.5"
-                          style={{ backgroundColor: "#f97316" }}
+                          style={{ backgroundColor: "#BC5F04" }}
                         >
                           {i + 1}
                         </span>
@@ -733,7 +762,7 @@ export default function LessonPrepPage() {
                               className="text-xs font-semibold px-2.5 py-1 rounded-full"
                               style={
                                 i === 0
-                                  ? { backgroundColor: "#fff7ed", color: "#c2410c", border: "1px solid #fdba74" }
+                                  ? { backgroundColor: "#FDF0E3", color: "#BC5F04", border: "1px solid #E8B87A" }
                                   : i === 1
                                   ? { backgroundColor: "#eff6ff", color: "#1d4ed8", border: "1px solid #93c5fd" }
                                   : { backgroundColor: "#f0fdf4", color: "#15803d", border: "1px solid #86efac" }

@@ -152,7 +152,7 @@ function PencilLoadingAnimation() {
 
 function scoreColor(score: number) {
   if (score >= 4) return { bar: "#10b981", text: "#065f46", bg: "#ecfdf5" }; // green
-  if (score >= 3) return { bar: "#f97316", text: "#7c2d12", bg: "#fff7ed" }; // orange
+  if (score >= 3) return { bar: "#BC5F04", text: "#7c2d12", bg: "#FDF0E3" }; // orange
   return         { bar: "#ef4444", text: "#7f1d1d", bg: "#fef2f2" };         // red
 }
 
@@ -160,7 +160,7 @@ function totalScoreLabel(total: number) {
   if (total >= 18) return { label: "Excellent", color: "#10b981" };
   if (total >= 14) return { label: "Proficient", color: "#34d399" };
   if (total >= 10) return { label: "Developing", color: "#f59e0b" };
-  if (total >= 6)  return { label: "Approaching", color: "#f97316" };
+  if (total >= 6)  return { label: "Approaching", color: "#BC5F04" };
   return { label: "Beginning", color: "#ef4444" };
 }
 
@@ -299,13 +299,13 @@ export default function EssayGraderPage() {
     "w-full rounded-xl border border-stone-200 bg-white px-4 py-3 text-sm text-stone-800 focus:outline-none focus:ring-2 focus:ring-amber-300 focus:border-amber-300 transition-all appearance-none cursor-pointer";
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: "#fffbf7" }}>
+    <div className="min-h-screen" style={{ backgroundColor: "#FAFAF7" }}>
       {/* ── Header ──────────────────────────────────────── */}
       <header
         className="sticky top-0 z-50 backdrop-blur-sm border-b"
         style={{
           backgroundColor: "rgba(255,251,247,0.92)",
-          borderColor: "#fed7aa",
+          borderColor: "#E8B87A",
         }}
       >
         <div className="max-w-5xl mx-auto px-6 h-16 flex items-center justify-between">
@@ -329,7 +329,7 @@ export default function EssayGraderPage() {
           </div>
           <span
             className="text-xs font-medium px-2.5 py-1 rounded-full border"
-            style={{ backgroundColor: "#fff7ed", borderColor: "#fdba74", color: "#c2410c" }}
+            style={{ backgroundColor: "#FDF0E3", borderColor: "#E8B87A", color: "#9A4D03" }}
           >
             For Teachers
           </span>
@@ -343,7 +343,7 @@ export default function EssayGraderPage() {
             <div className="bg-white rounded-2xl border border-stone-200 shadow-sm overflow-hidden">
               <div
                 className="px-6 py-5 border-b border-stone-100 flex items-start justify-between gap-3"
-                style={{ background: "linear-gradient(135deg, #fffbeb 0%, #fffbf7 100%)" }}
+                style={{ background: "linear-gradient(135deg, #FDF0E3 0%, #FAFAF7 100%)" }}
               >
                 <div>
                   <h2 className="text-lg font-bold text-stone-900" style={{ fontFamily: "var(--font-display)" }}>
@@ -513,7 +513,7 @@ export default function EssayGraderPage() {
               <div className="flex flex-col items-center justify-center py-24 text-center">
                 <div
                   className="w-20 h-20 rounded-2xl flex items-center justify-center mb-5 text-4xl"
-                  style={{ backgroundColor: "#fffbeb" }}
+                  style={{ backgroundColor: "#FDF0E3" }}
                 >
                   ✏️
                 </div>
@@ -551,7 +551,7 @@ export default function EssayGraderPage() {
                         <div className="flex items-center gap-2 mb-3 flex-wrap">
                           <span
                             className="text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide"
-                            style={{ backgroundColor: "#fff7ed", color: "#c2410c", border: "1px solid #fdba74" }}
+                            style={{ backgroundColor: "#FDF0E3", color: "#9A4D03", border: "1px solid #fdba74" }}
                           >
                             {result.essayType}
                           </span>
@@ -651,7 +651,7 @@ export default function EssayGraderPage() {
                 >
                   <div
                     className="px-6 py-4 border-b border-stone-100 flex items-center justify-between"
-                    style={{ backgroundColor: "#f5f3ff" }}
+                    style={{ backgroundColor: "#FDF0E3" }}
                   >
                     <div className="flex items-center gap-2">
                       <span className="text-xl">💌</span>
